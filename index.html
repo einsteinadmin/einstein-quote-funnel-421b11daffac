@@ -251,6 +251,14 @@
   .tobody{display:none;font-size:11.5px;color:#6c7378;line-height:1.5;margin-top:6px;padding:9px 11px;background:#fff;border:1px solid var(--line);border-radius:8px}
   .tobody b{color:var(--gray)}
   .tradeoff.open .tobody{display:block}
+  .notearea{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-family:inherit;font-size:12px;color:var(--gray);min-height:52px;resize:vertical}
+  .notearea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+  .review-sec{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .review-sec h3{margin-bottom:8px}
+  .rlabel{font-size:11.5px;font-weight:700;color:var(--dark);margin-bottom:5px}
+  .export-btn{width:100%;margin-top:10px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:background 150ms}
+  .export-btn:hover{background:#0a6cab}
+  .reviewhint{font-size:11px;color:#9aa1a6;margin-top:8px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -663,6 +671,15 @@
     </div>
 
     <button class="resetbtn" onclick="resetAll()">↺ Reset the form</button>
+
+    <div class="review-sec">
+      <h3>📝 Your review → export</h3>
+      <div class="rlabel">Overall notes (optional)</div>
+      <textarea id="overallNote" class="notearea" placeholder="Big-picture reactions, things to add or cut, questions for KP…"></textarea>
+      <button class="export-btn" id="exportBtn" onclick="exportDecisions()">⬇ Export decisions (.md + copy)</button>
+      <div class="reviewhint">Exports every change as <b>Keep</b> (toggle on) / <b>Cut</b> (toggle off) + your per-change notes + overall notes — the doc the designers/devs run with. Saved in this browser, so a refresh won't lose it. <i>Note: each viewer's notes are local to their browser — for a shared review, drive it live and export once, or have each person export and send it over.</i></div>
+    </div>
+
     <div class="legend">
       <b>How a question earns its slot:</b><br>
       <span class="badge b-demix">de-mix</span> full vs partial vs storage in one sqft band ·
@@ -737,7 +754,8 @@
     sel:{urgent:'no', moving:null, reason:null, eqsize:null, storagesize:null,
          packing:'no', packrooms:[], stops2:'no', stopcount:null, items:[], tenure:null, density:null,
          date:null, intent:null, contactpref:null},
-    tg:{tenure:true, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:true, intentq:true}
+    tg:{tenure:true, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:true, intentq:true},
+    notes:{}, overallNote:''
   };
   // which step each proposed change lives on (so toggling jumps you there to see it)
   const STEP_FOR={tenure:1, density:1, why:2, size:2, storage:2, partialpack:2, multistop:2, proximity:3, intentq:4};
@@ -800,6 +818,7 @@
     if(state.mode==='current'){ setMode('proposed'); goStep(STEP_FOR[key]); return; }
     // In Proposed mode, flip just this one change and show it where it lives.
     state.tg[key]=!state.tg[key];
+    persist();
     goStep(STEP_FOR[key]);
     syncToggleUI(); render();
   }
@@ -925,19 +944,65 @@
     proximity:"Free and behavioral, but far-out dates aren't always low intent — planners book early. Use it to nudge the intent axis, never to gate or deprioritize on its own.",
     intentq:"Self-reported intent is gameable and, per the research, unproven. Capture it for routing value, but validate against actual bookings before you weight it — and frame it as personalization, not a qualifying test."
   };
+  function setNoteLabel(btn,val){ btn.innerHTML='<span class="car">▸</span> ✎ Note / request a change'+(val&&val.trim()?' <span style="color:var(--orange)">●</span>':''); }
   function buildTradeoffs(){
     document.querySelectorAll('.toggle').forEach(t=>{
-      const key=t.dataset.tg, txt=TRADEOFFS[key]; if(!txt) return;
+      const key=t.dataset.tg; if(!key) return;
       const content=t.querySelector('.trow > div:last-child'); if(!content) return;
-      const wrap=document.createElement('div'); wrap.className='tradeoff';
-      const btn=document.createElement('button'); btn.className='tobtn'; btn.innerHTML='<span class="car">▸</span> Trade-off';
-      btn.addEventListener('click',e=>{e.stopPropagation(); wrap.classList.toggle('open');});
-      const body=document.createElement('div'); body.className='tobody'; body.textContent=txt;
-      wrap.appendChild(btn); wrap.appendChild(body); content.appendChild(wrap);
+      // Trade-off expander
+      const txt=TRADEOFFS[key];
+      if(txt){
+        const wrap=document.createElement('div'); wrap.className='tradeoff';
+        const btn=document.createElement('button'); btn.className='tobtn'; btn.innerHTML='<span class="car">▸</span> Trade-off';
+        btn.addEventListener('click',e=>{e.stopPropagation(); wrap.classList.toggle('open');});
+        const body=document.createElement('div'); body.className='tobody'; body.textContent=txt;
+        wrap.appendChild(btn); wrap.appendChild(body); content.appendChild(wrap);
+      }
+      // Note / request-a-change expander
+      const nwrap=document.createElement('div'); nwrap.className='tradeoff';
+      const nbtn=document.createElement('button'); nbtn.className='tobtn';
+      const nbody=document.createElement('div'); nbody.className='tobody'; nbody.style.background='none'; nbody.style.border='none'; nbody.style.padding='0';
+      const ta=document.createElement('textarea'); ta.className='notearea'; ta.placeholder='e.g. move to Step 1 · reword to… · cut this · add a question for X';
+      ta.value=state.notes[key]||'';
+      ta.addEventListener('click',e=>e.stopPropagation());
+      ta.addEventListener('input',()=>{state.notes[key]=ta.value; persist(); setNoteLabel(nbtn,ta.value);});
+      nbtn.addEventListener('click',e=>{e.stopPropagation(); nwrap.classList.toggle('open');});
+      nbody.appendChild(ta); nwrap.appendChild(nbtn); nwrap.appendChild(nbody); content.appendChild(nwrap);
+      setNoteLabel(nbtn, state.notes[key]||'');
     });
   }
 
+  // ---- persistence (per-browser review session) ----
+  function persist(){ try{localStorage.setItem('qfw-review', JSON.stringify({tg:state.tg, notes:state.notes, overallNote:state.overallNote}));}catch(e){} }
+  function loadPersisted(){ try{const r=JSON.parse(localStorage.getItem('qfw-review')||'null'); if(r){ if(r.tg)Object.assign(state.tg,r.tg); if(r.notes&&typeof r.notes==='object')state.notes=r.notes; if(typeof r.overallNote==='string')state.overallNote=r.overallNote; }}catch(e){} }
+
+  // ---- export decisions to markdown ----
+  const LABELS={
+    tenure:'"How long in your home?" (tenure)', density:'"How packed is your place?" (density)',
+    why:'Capture the partial-move "why"', size:'Ask for an equivalent size', storage:'Quote storage off the unit size',
+    partialpack:'Packing scope — which rooms', multistop:'Multi-stop: capture the count',
+    proximity:'Use date proximity as an intent signal', intentq:'Soft intent + contact preference'
+  };
+  function exportDecisions(){
+    const order=['tenure','density','why','size','storage','partialpack','multistop','proximity','intentq'];
+    const stepName={1:'Step 1 · Location',2:'Step 2 · Special Items',3:'Step 3 · Date',4:'Step 4 · Contact'};
+    const keep=order.filter(k=>state.tg[k]), cut=order.filter(k=>!state.tg[k]);
+    const entry=k=>{ let s='- **'+LABELS[k]+'** — '+stepName[STEP_FOR[k]]+'\n'; const n=(state.notes[k]||'').trim(); if(n)s+='  - ✎ '+n.replace(/\n+/g,' ')+'\n'; return s; };
+    let md='# Quote Funnel Workshop — Decisions\n\n';
+    md+='_Exported '+new Date().toLocaleString()+' · source: einstein-quote-funnel workshop_\n\n';
+    md+='Each proposed change is marked **KEEP** (toggle on) or **CUT** (toggle off), with any reviewer notes / requested changes.\n\n';
+    md+='## ✅ Keep ('+keep.length+')\n'+(keep.map(entry).join('')||'_none_\n')+'\n';
+    md+='## ❌ Cut ('+cut.length+')\n'+(cut.map(entry).join('')||'_none_\n')+'\n';
+    const on=state.overallNote.trim(); if(on)md+='## Overall notes\n\n'+on+'\n';
+    try{const blob=new Blob([md],{type:'text/markdown'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='quote-funnel-decisions.md';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);}catch(e){}
+    try{navigator.clipboard.writeText(md);}catch(e){}
+    const b=document.getElementById('exportBtn'); if(b){const o=b.textContent;b.textContent='✓ Downloaded + copied';setTimeout(()=>{b.textContent=o;},1800);}
+  }
+
+  loadPersisted();
   buildGrid(); buildCal(); buildTradeoffs(); syncToggleUI(); render();
+  const onEl=document.getElementById('overallNote');
+  if(onEl){ onEl.value=state.overallNote; onEl.addEventListener('input',()=>{state.overallNote=onEl.value; persist();}); }
 </script>
 </body>
 </html>
