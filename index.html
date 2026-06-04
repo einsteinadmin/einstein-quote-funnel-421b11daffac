@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Quote Funnel Workshop — Full Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#EF8B22; --gray:#53575A; --blue:#0979C3; --dark:#27343D;
+    --light:#F6F6F6; --white:#fff; --success:#69995d; --error:#CC0100;
+    --line:#E5E5E5; --orange-tint:#FFF8F0; --blue-tint:#EAF4FB;
+    --shadow:0 4px 18px rgba(39,52,61,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Roboto',sans-serif;color:var(--gray);background:var(--light);line-height:1.45}
+  a{color:var(--blue)}
+
+  .topbar{background:var(--dark);color:#fff;padding:13px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:sticky;top:0;z-index:50}
+  .topbar h1{font-size:17px;font-weight:900}
+  .topbar .sub{font-size:12px;color:#aeb6bd;font-weight:400;max-width:560px}
+  .mode-switch{margin-left:auto;display:flex;background:#1c262d;border-radius:10px;padding:4px;gap:4px}
+  .mode-switch button{background:none;border:none;color:#aeb6bd;font-family:inherit;font-weight:700;font-size:13px;padding:8px 15px;border-radius:7px;cursor:pointer;transition:all 120ms ease}
+  .mode-switch button.active{background:var(--orange);color:#fff}
+
+  .wrap{display:grid;grid-template-columns:1fr 430px;gap:0;align-items:start}
+  @media(max-width:1080px){.wrap{grid-template-columns:1fr}}
+
+  .stage{padding:24px 22px 80px;min-height:100vh}
+  .form-card{max-width:820px;margin:0 auto;background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+
+  .stepper{display:flex;justify-content:center;gap:4px;padding:16px 14px 8px;flex-wrap:wrap}
+  .step{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#b6bbbf;font-weight:600;min-width:62px;cursor:pointer;background:none;border:none;font-family:inherit;transition:color 120ms}
+  .step .dot{width:24px;height:24px;border-radius:50%;background:#e7e9ea;color:#9aa1a6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;margin-bottom:4px;transition:all 120ms}
+  .step.done .dot{background:var(--blue);color:#fff}
+  .step.active .dot{background:var(--orange);color:#fff;transform:scale(1.12)}
+  .step.active{color:var(--dark)}
+  .step:hover .dot{box-shadow:0 0 0 3px var(--orange-tint)}
+  .trust{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:4px 12px 14px;border-bottom:1px solid var(--line)}
+  .trust span{font-size:11px;color:var(--gray);display:flex;align-items:center;gap:5px}
+
+  .form-body{padding:24px 30px 32px}
+  .mascot{width:52px;height:52px;border-radius:50%;background:var(--orange-tint);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:25px;margin:2px auto 12px}
+  .smbadge{display:block;width:max-content;margin:0 auto 10px;font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-tint);border:1px solid #bcd6ea;border-radius:20px;padding:3px 12px}
+  .form-body h2{text-align:center;font-size:23px;font-weight:900;color:var(--dark);margin-bottom:6px}
+  .form-body .lead{text-align:center;font-size:14px;color:var(--gray);max-width:540px;margin:0 auto 8px}
+  .accent{text-align:center;font-size:13px;color:var(--orange);font-style:italic;font-weight:500;margin-bottom:20px}
+
+  .q{border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;margin-bottom:15px;transition:border-color 180ms,box-shadow 180ms}
+  .q.spotlight{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-tint)}
+  .q .qtitle{text-align:center;font-weight:700;font-size:15px;color:var(--dark);margin-bottom:4px}
+  .q .qhint{text-align:center;font-size:12.5px;color:#8a9095;font-style:italic;margin-bottom:12px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice{border:2px solid var(--line);border-radius:11px;padding:14px 10px;background:#fff;cursor:pointer;font-family:inherit;font-size:14px;color:var(--gray);text-align:center;transition:all 150ms}
+  .choice:hover{border-color:var(--orange)}
+  .choice.sel{border-color:var(--orange);background:var(--orange-tint);font-weight:700}
+  .choice b{color:var(--orange)}
+  .items{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .item{width:92px;height:84px;border:2px solid var(--line);border-radius:11px;background:#fff;cursor:pointer;font-size:11px;color:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:all 150ms}
+  .item:hover{border-color:var(--orange)}
+  .item.sel{border-color:var(--orange);background:var(--orange-tint)}
+  .item .ico{font-size:20px}
+
+  /* inputs */
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:12.5px;font-weight:700;color:var(--dark);margin-bottom:5px}
+  .field label .note{font-weight:400;color:var(--orange);font-style:italic;font-size:11.5px}
+  .field input,.field select{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 11px;font-family:inherit;font-size:13.5px;color:var(--gray);background:#fff}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+  .twopanel{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.twopanel{grid-template-columns:1fr}}
+  .locpanel{border:1px solid var(--line);border-radius:12px;padding:16px}
+  .locpanel h3{font-size:15px;font-weight:900;color:var(--dark);text-align:center}
+  .locpanel .sub{font-size:12px;color:#9aa1a6;text-align:center;margin-bottom:14px}
+  .panelnum{width:26px;height:26px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 6px}
+  .toggles-inline{display:flex;gap:10px;margin-top:6px}
+  .tg-inline{flex:1;display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px}
+  .miniswitch{width:34px;height:20px;border-radius:12px;background:#cfd4d7;position:relative;cursor:pointer;transition:background 150ms}
+  .miniswitch::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left 150ms}
+  .tg-inline.on .miniswitch{background:var(--blue)}
+  .tg-inline.on .miniswitch::after{left:16px}
+
+  /* calendar */
+  .cal{max-width:430px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}
+  .cal .calhdr{text-align:center;font-weight:900;color:var(--dark);font-size:16px;margin-bottom:10px}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .caldow{font-size:9.5px;font-weight:700;color:#9aa1a6;text-align:center;text-transform:uppercase}
+  .calday{aspect-ratio:1;border:1px solid var(--line);border-radius:8px;background:#fff;font-family:inherit;font-size:13px;color:var(--gray);cursor:pointer;transition:all 120ms}
+  .calday:hover{border-color:var(--orange)}
+  .calday.sel{background:var(--orange);color:#fff;border-color:var(--orange);font-weight:700}
+  .calday.muted{color:#cfd4d7;cursor:default;border-color:#f0f0f0}
+  .proxnote{margin-top:14px;padding:11px 14px;border-radius:10px;font-size:12.5px;text-align:center;font-weight:500}
+  .proxnote.near{background:#fdeede;color:#c2741a;border:1px dashed var(--orange)}
+  .proxnote.far{background:var(--blue-tint);color:var(--blue);border:1px dashed #bcd6ea}
+
+  /* why-collect + gate banner */
+  .whybox{background:linear-gradient(180deg,#FEF3E6,#FFFDFB);border:1px solid #f3d9b8;border-radius:12px;padding:16px 18px;margin-top:6px}
+  .whybox h4{font-size:15px;font-weight:900;color:var(--dark);margin-bottom:8px}
+  .whybox p{font-size:12.5px;color:var(--gray);margin-bottom:10px}
+  .whygrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px}
+  .gatebanner{background:#2c3a44;color:#fff;border-radius:12px;padding:13px 16px;margin:16px 0;font-size:12.5px;display:flex;gap:10px;align-items:flex-start}
+  .gatebanner b{color:var(--orange)}
+
+  /* estimate */
+  .estprice{border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;margin-bottom:16px}
+  .estprice .big{font-size:46px;font-weight:900;color:var(--dark);line-height:1}
+  .estprice .basis{font-size:12.5px;color:#8a9095;margin:6px 0 16px}
+  .eststats{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:6px}
+  .eststats div{font-size:11px;color:var(--gray)}
+  .eststats div b{display:block;font-size:15px;color:var(--dark)}
+  .slots{display:flex;gap:10px;justify-content:center;margin-top:14px}
+  .slot{border:2px solid var(--line);border-radius:10px;padding:10px 18px;font-family:inherit;font-size:13px;cursor:pointer;color:var(--gray)}
+  .slot.sel{border-color:var(--orange);background:var(--orange-tint);font-weight:700}
+  .walkhook{background:var(--blue-tint);border:1px dashed var(--blue);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:12.5px}
+  .walkhook b{color:var(--dark)}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+  .compcard{border-radius:12px;padding:14px}
+  .compcard.them{background:#fff;border:1px solid var(--line)}
+  .compcard.us{background:var(--light);border:2px solid var(--blue)}
+  .compcard h4{text-align:center;font-size:12px;font-weight:900;margin-bottom:8px}
+  .compcard li{list-style:none;font-size:11.5px;display:flex;justify-content:space-between;padding:3px 0}
+  .fee-red{color:var(--error);font-weight:700}.fee-blue{color:var(--blue);font-weight:700}
+  .faqq{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:13px;font-weight:700;color:var(--dark);display:flex;justify-content:space-between}
+  .faqq .pl{color:var(--orange);font-weight:700}
+
+  /* book */
+  .readback{border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .readback .rrow{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line)}
+  .readback .rrow:last-child{border-bottom:none}
+  .readback .rrow .rk{color:#8a9095}.readback .rrow .rv{font-weight:700;color:var(--dark)}
+  .field textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 11px;font-family:inherit;font-size:13.5px;color:var(--gray);min-height:64px;resize:vertical}
+  .field textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-tint)}
+
+  .followup{margin-top:14px;padding:16px;border-radius:12px;background:var(--blue-tint);border:1px dashed var(--blue);animation:slideIn 240ms cubic-bezier(0,0,.2,1)}
+  .followup .ftag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--blue);background:#fff;border:1px solid var(--blue);border-radius:20px;padding:2px 9px;margin-bottom:10px}
+  .followup .fq{font-weight:700;font-size:14px;color:var(--dark);margin-bottom:4px}
+  .followup .fhint{font-size:12px;color:#6c7378;margin-bottom:12px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:2px solid #cfe0ee;background:#fff;border-radius:22px;padding:8px 14px;font-size:13px;font-family:inherit;color:var(--gray);cursor:pointer;transition:all 150ms}
+  .chip:hover{border-color:var(--blue)}
+  .chip.sel{border-color:var(--blue);background:var(--blue);color:#fff;font-weight:700}
+  .seg{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .seg button{flex:1;min-width:110px;border:2px solid #cfe0ee;background:#fff;border-radius:10px;padding:10px;font-size:12.5px;font-family:inherit;color:var(--gray);cursor:pointer;transition:all 150ms}
+  .seg button:hover{border-color:var(--blue)}
+  .seg button.sel{border-color:var(--blue);background:var(--blue-tint);font-weight:700;color:var(--dark)}
+  .nested{margin-top:12px;padding-top:12px;border-top:1px dashed #bcd6ea}
+  .hidden{display:none !important}
+
+  .cta{display:block;width:100%;margin-top:20px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:transform 120ms,box-shadow 120ms}
+  .cta:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(9,121,195,.3)}
+
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+
+  .panel{position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;background:var(--white);border-left:1px solid var(--line);padding:20px 18px 60px}
+  @media(max-width:1080px){.panel{position:static;height:auto;border-left:none;border-top:1px solid var(--line)}}
+  .panel h3{font-size:12.5px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin:0 0 4px;display:flex;align-items:center;gap:6px}
+  .panel .psub{font-size:11.5px;color:#9aa1a6;margin-bottom:14px}
+
+  .inspector{background:var(--dark);color:#fff;border-radius:14px;padding:15px;margin-bottom:20px}
+  .inspector .ihdr{font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#8fa6b4;margin-bottom:11px;display:flex;align-items:center;gap:6px}
+  .grid2{display:grid;gap:5px;margin-bottom:12px}
+  .quad{border-radius:9px;padding:9px;font-size:10.5px;background:#1c262d;color:#8fa6b4;border:1.5px solid transparent;transition:all 150ms;min-height:54px}
+  .quad b{display:block;font-size:11px;color:#cdd5da;margin-bottom:2px}
+  .quad.lit{border-color:#fff;color:#fff;background:#2c3a44}
+  .quad.lit b{color:#fff}
+  .quad.lit.star{border-color:var(--orange);background:#3a2e1c}
+  .axlabel{font-size:9px;color:#6c7c87;display:flex;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:.5px}
+  .verdict{display:flex;align-items:center;gap:9px;margin-bottom:10px;flex-wrap:wrap}
+  .pill{font-size:12px;font-weight:900;padding:5px 12px;border-radius:22px}
+  .pill.est{background:var(--success);color:#fff}
+  .pill.inest{background:var(--error);color:#fff}
+  .pill.human{background:var(--orange);color:#fff}
+  .pill.pending{background:#3a4953;color:#cdd5da}
+  .vlabel{font-size:12px;color:#cdd5da;flex:1;min-width:140px}
+  .iline{font-size:12px;color:#dde3e7;margin:6px 0;display:flex;gap:8px}
+  .iline .k{color:#8fa6b4;min-width:74px;font-weight:500}
+  .sigs{display:flex;flex-wrap:wrap;gap:5px}
+  .sig{font-size:10px;background:#1c262d;border:1px solid #34434d;color:#bcd0db;border-radius:14px;padding:3px 8px}
+
+  .tgroup-h{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#aab0b4;margin:14px 0 7px}
+  .toggle{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:9px;transition:border-color 150ms}
+  .toggle.on{border-color:var(--orange);background:var(--orange-tint)}
+  .toggle.disabled{opacity:.5}
+  .trow{display:flex;align-items:flex-start;gap:10px}
+  .switch{flex-shrink:0;width:38px;height:22px;border-radius:14px;background:#cfd4d7;position:relative;cursor:pointer;transition:background 150ms;margin-top:1px}
+  .switch::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left 150ms;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .toggle.on .switch{background:var(--orange)}
+  .toggle.on .switch::after{left:18px}
+  .tlabel{font-weight:700;font-size:13px;color:var(--dark);display:flex;align-items:center;gap:5px}
+  .tdesc{font-size:11.5px;color:#6c7378;margin-top:3px}
+  .buckets{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .badge{font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 6px;border-radius:11px}
+  .b-demix{background:#e7f0fa;color:var(--blue)}
+  .b-intent{background:#f3e9fb;color:#7a3ca8}
+  .b-acc{background:#eaf6e8;color:var(--success)}
+  .b-conv{background:#fdeede;color:#c2741a}
+
+  .tip{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#cfd9e0;color:#fff;font-size:10px;font-weight:700;cursor:help;position:relative;font-style:normal}
+  .tip .bub{visibility:hidden;opacity:0;position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:230px;background:var(--dark);color:#fff;font-size:11px;font-weight:400;line-height:1.4;padding:9px 11px;border-radius:9px;z-index:30;transition:opacity 120ms;box-shadow:0 6px 20px rgba(0,0,0,.25);text-transform:none;letter-spacing:0;text-align:left}
+  .tip .bub b{color:var(--orange)}
+  .tip:hover .bub{visibility:visible;opacity:1}
+  .inspector .tip{background:#34434d}
+
+  .legend{font-size:11px;color:#9aa1a6;margin-top:16px;border-top:1px solid var(--line);padding-top:13px}
+  .legend b{color:var(--gray)}
+  .resetbtn{width:100%;margin-top:12px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:inherit;font-weight:700;font-size:12.5px;color:var(--gray);cursor:pointer}
+  .resetbtn:hover{border-color:var(--gray)}
+  .footer-note{max-width:820px;margin:16px auto 0;font-size:11px;color:#9aa1a6;text-align:center}
+
+  /* research button + modal */
+  .research-btn{width:100%;margin-bottom:16px;background:var(--dark);color:#fff;border:none;border-radius:11px;padding:12px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 150ms}
+  .research-btn:hover{background:#1c262d}
+  .modal-bg{position:fixed;inset:0;background:rgba(39,52,61,.55);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto}
+  .modal-bg.open{display:flex}
+  .modal{background:#fff;border-radius:16px;max-width:660px;width:100%;padding:28px 32px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative}
+  .modal h2{font-size:22px;font-weight:900;color:var(--dark);margin-bottom:4px;padding-right:30px}
+  .modal .msub{font-size:12.5px;color:#9aa1a6;margin-bottom:8px}
+  .modal .mclose{position:absolute;top:18px;right:20px;width:30px;height:30px;border:none;background:var(--light);border-radius:50%;font-size:18px;color:var(--gray);cursor:pointer;line-height:1}
+  .modal .mclose:hover{background:#e7e9ea}
+  .rfind{display:flex;gap:13px;padding:15px 0;border-top:1px solid var(--line)}
+  .rfind .ric{font-size:22px;flex-shrink:0;line-height:1.2}
+  .rfind h4{font-size:14px;font-weight:900;color:var(--dark);margin-bottom:3px}
+  .rfind p{font-size:12.5px;color:var(--gray);line-height:1.5}
+  .rfind p b{color:var(--dark)}
+  .rprinciple{margin-top:16px;background:var(--light);border-radius:11px;padding:14px 16px;font-size:12.5px;color:var(--gray);line-height:1.6}
+  .rprinciple b{color:var(--dark)}
+  .rsource{margin-top:14px;font-size:11px;color:#9aa1a6;font-style:italic}
+  .inest-btn{width:100%;margin-top:12px;background:#1c262d;color:#cdd5da;border:1px solid #34434d;border-radius:9px;padding:9px;font-family:inherit;font-weight:700;font-size:11.5px;cursor:pointer}
+  .inest-btn:hover{background:#34434d;color:#fff}
+  .inestcard{border-radius:12px;padding:18px;margin-top:14px}
+  .inestcard.today{background:#fdeeee;border:1px solid #f3c2c2}
+  .inestcard.prop{background:#eef6ec;border:1px solid #c3e0bb}
+  .inestcard .ihd{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+  .inestcard.today .ihd{color:var(--error)}
+  .inestcard.prop .ihd{color:var(--success)}
+  .inestcard h3{font-size:17px;font-weight:900;color:var(--dark);margin-bottom:6px}
+  .inestcard p{font-size:13px;color:var(--gray);margin-bottom:10px}
+  .recovery{display:flex;flex-direction:column;gap:9px}
+  .roption{display:flex;gap:11px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+  .roption .rnum{flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--blue);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .roption b{font-size:13px;color:var(--dark)}
+  .roption span{font-size:12px;color:#6c7378;display:block}
+  .branchmini{font-size:11.5px;color:#8a6a3a;margin-top:10px}
+  .inestcaption{font-size:12px;color:#6c7378;font-style:italic;margin-top:14px;text-align:center}
+  /* trade-off expandable under each toggle */
+  .tradeoff{margin-top:8px}
+  .tobtn{background:none;border:none;color:var(--blue);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px}
+  .tobtn .car{display:inline-block;transition:transform 150ms;font-size:9px}
+  .tradeoff.open .tobtn .car{transform:rotate(90deg)}
+  .tobody{display:none;font-size:11.5px;color:#6c7378;line-height:1.5;margin-top:6px;padding:9px 11px;background:#fff;border:1px solid var(--line);border-radius:8px}
+  .tobody b{color:var(--gray)}
+  .tradeoff.open .tobody{display:block}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>Quote Funnel Workshop — Full Flow 🧠</h1>
+    <div class="sub">All six steps are live and clickable. Toggle proposed changes, walk the funnel, watch the routing on the right. Not the live form — built from screenshots, details approximate.</div>
+  </div>
+  <div class="mode-switch">
+    <button id="mCurrent" class="active" onclick="setMode('current')">Current form</button>
+    <button id="mProposed" onclick="setMode('proposed')">Proposed flow</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="stage">
+    <div class="form-card">
+      <div class="stepper" id="stepper">
+        <button class="step" data-step="1"><div class="dot">1</div>Location</button>
+        <button class="step active" data-step="2"><div class="dot">2</div>Special Items</button>
+        <button class="step" data-step="3"><div class="dot">3</div>Date</button>
+        <button class="step" data-step="4"><div class="dot">4</div>Contact</button>
+        <button class="step" data-step="5"><div class="dot">5</div>Estimate</button>
+        <button class="step" data-step="6"><div class="dot">6</div>Book</button>
+      </div>
+      <div class="trust">
+        <span>🏆 Multi-award winning</span><span>⭐ 4.9/5 Stars</span><span>🛡️ $2,000 Coverage</span><span>🔍 No Hidden Fees</span>
+      </div>
+
+      <!-- ===== STEP 1 — Location ===== -->
+      <div class="form-body step-panel hidden" data-panel="1">
+        <span class="smbadge">🧠 Smart Move System™ Activated</span>
+        <h2>Let's plan your genius move</h2>
+        <p class="lead">Tell us about your locations and we'll handle the brain work.</p>
+        <p class="accent">No PhD required, we promise 🎓</p>
+
+        <div class="twopanel">
+          <div class="locpanel">
+            <div class="panelnum">1</div>
+            <h3>Moving from</h3><div class="sub">Your current digs</div>
+            <div class="field"><label>Address *</label><input type="text" placeholder="Enter a location"></div>
+            <div class="field"><label>Property Type *</label><select><option>— Select —</option><option>Apartment</option><option>House</option><option>Condo / Townhome</option><option>Storage Unit</option></select></div>
+            <div class="field"><label>Size * <span class="note">🧠 helps build your crew size</span></label><select><option>— Select —</option><option>Studio</option><option>1 bedroom</option><option>2 bedroom</option><option>3 bedroom</option><option>4+ bedroom</option></select></div>
+            <div class="field"><label>Square Footage</label><input type="number" placeholder="e.g. 1,200"></div>
+            <div class="field"><label>Floor *</label><input type="text" placeholder="e.g. 2"></div>
+            <div class="field"><label>Distance truck can park *</label><select><option>— Select —</option><option>Right out front (0-20 ft)</option><option>A brief jaunt (21-50 ft)</option><option>A hike (51-100 ft)</option></select></div>
+            <div class="toggles-inline">
+              <div class="tg-inline"><span>Elevator</span><div class="miniswitch"></div></div>
+              <div class="tg-inline on"><span>Stairs</span><div class="miniswitch"></div></div>
+            </div>
+          </div>
+          <div class="locpanel">
+            <div class="panelnum">2</div>
+            <h3>Moving to</h3><div class="sub">Your new castle</div>
+            <div class="field"><label>Address *</label><input type="text" placeholder="Enter a location"></div>
+            <div class="field"><label>Property Type *</label><select><option>— Select —</option><option>Apartment</option><option>House</option><option>Condo / Townhome</option><option>Storage Unit</option></select></div>
+            <div class="field"><label>Size * <span class="note">🧠 helps build your crew size</span></label><select><option>— Select —</option><option>Studio</option><option>1 bedroom</option><option>2 bedroom</option><option>3 bedroom</option><option>4+ bedroom</option></select></div>
+            <div class="field"><label>Square Footage</label><input type="number" placeholder="e.g. 1,400"></div>
+            <div class="field"><label>Floor *</label><input type="text" placeholder="e.g. 1"></div>
+            <div class="field"><label>Distance truck can park *</label><select><option>— Select —</option><option>Right out front (0-20 ft)</option><option>A brief jaunt (21-50 ft)</option><option>A hike (51-100 ft)</option></select></div>
+            <div class="toggles-inline">
+              <div class="tg-inline"><span>Elevator</span><div class="miniswitch"></div></div>
+              <div class="tg-inline"><span>Stairs</span><div class="miniswitch"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROPOSED: tenure -->
+        <div class="followup hidden" id="fuTenure">
+          <span class="ftag">Proposed · estimate accuracy</span>
+          <div class="fq">How long have you been in your current place?</div>
+          <div class="fhint">Be honest — 12 years means more stuff hiding in that garage. 😅 Helps us nail the time estimate.</div>
+          <div class="seg" data-q="tenure">
+            <button data-v="lt2">Under 2 yrs</button>
+            <button data-v="2to5">2–5 yrs</button>
+            <button data-v="5to10">5–10 yrs</button>
+            <button data-v="gt10">10+ yrs</button>
+          </div>
+        </div>
+
+        <!-- PROPOSED: density -->
+        <div class="followup hidden" id="fuDensity">
+          <span class="ftag">Proposed · de-mix + accuracy</span>
+          <div class="fq">How packed is your place, honestly?</div>
+          <div class="fhint">Same square footage can mean wildly different amounts of stuff — this helps us get it right.</div>
+          <div class="seg" data-q="density">
+            <button data-v="light">Pretty minimal</button>
+            <button data-v="avg">About average</button>
+            <button data-v="full">Packed to the gills</button>
+          </div>
+        </div>
+
+        <button class="cta" onclick="goStep(2)">Continue to next step →</button>
+      </div>
+
+      <!-- ===== STEP 2 — Special Items (live) ===== -->
+      <div class="form-body step-panel" data-panel="2">
+        <div class="mascot">🧠</div>
+        <h2>Any extra special stuff going on?</h2>
+        <p class="lead">On a tight timeline? Need help packing? Bringing <i>some</i> stuff, but not all the stuff? Tell us here.</p>
+
+        <div class="q">
+          <div class="qtitle">Is your move happening in the next 24 hours?</div>
+          <div class="choices" data-q="urgent">
+            <button class="choice" data-v="yes">Yes</button>
+            <button class="choice sel" data-v="no">No</button>
+          </div>
+        </div>
+
+        <div class="q" id="qMoving">
+          <div class="qtitle">Are you moving everything from one property to the other?</div>
+          <div class="choices" data-q="moving">
+            <button class="choice" data-v="all"><b>Yes</b>, the whole lot! 🏠</button>
+            <button class="choice" data-v="some"><b>No</b>, just some stuff 📦</button>
+          </div>
+          <div class="followup hidden" id="fuWhy">
+            <span class="ftag">Proposed · de-mix the partial bucket</span>
+            <div class="fq">Got it — what's the story with this move?</div>
+            <div class="fhint">This helps us price it right instead of bumping you to a phone call. 👇</div>
+            <div class="chips" data-q="reason">
+              <button class="chip" data-v="furniture">Just some furniture</button>
+              <button class="chip" data-v="storage">Moving to / from storage</button>
+              <button class="chip" data-v="college">Kid heading to college</button>
+              <button class="chip" data-v="reno">One renovated room</button>
+              <button class="chip" data-v="downsize">Downsizing / splitting a home</button>
+              <button class="chip" data-v="stops">A few stops, picking things up</button>
+              <button class="chip" data-v="other">Something else</button>
+            </div>
+            <div class="nested hidden" id="fuSize">
+              <div class="fq">About how much are we moving?</div>
+              <div class="fhint">No need to measure — just ballpark it. (Way easier than "what percent?")</div>
+              <div class="seg" data-q="eqsize">
+                <button data-v="fewitems">A few items</button>
+                <button data-v="1br">About a 1-bedroom's worth</button>
+                <button data-v="2br">About a 2-bedroom's worth</button>
+                <button data-v="most">Most of the house</button>
+              </div>
+            </div>
+            <div class="nested hidden" id="fuStorage">
+              <div class="fq">What size is your storage unit?</div>
+              <div class="fhint">We'll base your quote on your storage size, not your whole home.</div>
+              <div class="seg" data-q="storagesize">
+                <button data-v="5x5">5×5</button><button data-v="5x10">5×10</button><button data-v="10x10">10×10</button><button data-v="10x15">10×15</button><button data-v="10x20">10×20</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="qtitle">Do you need help packing your belongings into boxes?</div>
+          <div class="qhint">Wrapping and padding your furniture is always included — this is just about getting your stuff into boxes.</div>
+          <div class="choices" data-q="packing">
+            <button class="choice" data-v="yes"><b>Yes</b>, help me please! 🙏</button>
+            <button class="choice sel" data-v="no"><b>No</b>, I'll do it myself 💪</button>
+          </div>
+          <div class="followup hidden" id="fuPackRooms">
+            <span class="ftag">Proposed · how much packing?</span>
+            <div class="fq">Which rooms need packing?</div>
+            <div class="fhint">Tap all that apply — or "the whole house" if it's everything. Lets us scope the packing instead of guessing.</div>
+            <div class="chips" data-q="packrooms">
+              <button class="chip" data-v="whole">The whole house 🏠</button>
+              <button class="chip" data-v="kitchen">Kitchen</button>
+              <button class="chip" data-v="bedrooms">Bedrooms</button>
+              <button class="chip" data-v="garage">Garage</button>
+              <button class="chip" data-v="living">Living room</button>
+              <button class="chip" data-v="office">Office</button>
+              <button class="chip" data-v="other">Other</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="qtitle">Are you making any additional stops?</div>
+          <div class="choices" data-q="stops2">
+            <button class="choice" data-v="yes"><b>Yes</b>, we're doing a crawl 🚚</button>
+            <button class="choice sel" data-v="no"><b>No</b>, just here to there 📍</button>
+          </div>
+          <div class="followup hidden" id="fuStops">
+            <span class="ftag">Proposed · keep multi-stop estimable</span>
+            <div class="fq">How many stops total?</div>
+            <div class="fhint">A quick count lets us price the route instead of bumping you to a call.</div>
+            <div class="seg" data-q="stopcount">
+              <button data-v="2">2 stops</button>
+              <button data-v="3">3 stops</button>
+              <button data-v="4plus">4+ stops</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="q">
+          <div class="qtitle">Are any of these special items making the journey?</div>
+          <div class="items" data-q="items">
+            <button class="item" data-v="piano"><span class="ico">🎹</span>Piano</button>
+            <button class="item" data-v="safe"><span class="ico">🔒</span>Safe<br>(600lbs+)</button>
+            <button class="item" data-v="art"><span class="ico">🖼️</span>Artwork<br>($2k+)</button>
+            <button class="item" data-v="pool"><span class="ico">🎱</span>Pool Table</button>
+            <button class="item" data-v="heavy"><span class="ico">🪑</span>Heavy Furn.<br>(600lbs+)</button>
+          </div>
+        </div>
+        <button class="cta" onclick="goStep(3)">Choose move date →</button>
+      </div>
+
+      <!-- ===== STEP 3 — Date ===== -->
+      <div class="form-body step-panel hidden" data-panel="3">
+        <div class="mascot">📅</div>
+        <h2>When's good for you?</h2>
+        <p class="lead">Pick a date, and we'll pick up everything else.</p>
+        <p class="accent">By the way, weekdays are often the *best* days to move!</p>
+        <div class="cal">
+          <div class="calhdr">June 2026</div>
+          <div class="calgrid" id="calgrid"></div>
+        </div>
+        <div class="proxnote hidden" id="proxNote"></div>
+        <button class="cta" onclick="goStep(4)">Continue to next step →</button>
+      </div>
+
+      <!-- ===== STEP 4 — Contact ===== -->
+      <div class="form-body step-panel hidden" data-panel="4">
+        <div class="mascot">🧠</div>
+        <h2>Tell us who's moving</h2>
+        <p class="lead">Please enter your contact info so we can send your Smart Move™ estimate.</p>
+        <p class="accent">No spam, we promise — just your estimate and moving tips that don't suck! 🤙</p>
+
+        <div class="twopanel">
+          <div class="field"><label>First Name *</label><input type="text"></div>
+          <div class="field"><label>Last Name *</label><input type="text"></div>
+        </div>
+        <div class="field"><label>Email Address *</label><input type="email"></div>
+        <div class="field"><label>Phone Number *</label><input type="tel" placeholder="+1 (___) ___-____"></div>
+        <div class="field"><label>How did you hear about us? *</label><select><option>— Select —</option><option>Google</option><option>Friend / referral</option><option>Mailer</option><option>Billboard</option><option>Used you before</option></select></div>
+
+        <div class="whybox">
+          <h4>Why we collect your contact info early:</h4>
+          <p>Unlike other companies, we ask for your info earlier so we can make sure you get the most accurate quote. You'll never get a high-pressure sales call — those are gross. And if you get busy and forget to finish, we've got your back!</p>
+          <div class="whygrid">
+            <span>✅ Instant accurate quote</span><span>❌ We NEVER sell data</span>
+            <span>✅ Award-winning service</span><span>❌ No high-pressure calls</span>
+            <span>✅ Smart moving tips</span><span>❌ No spam, EVER</span>
+          </div>
+        </div>
+
+        <div class="gatebanner">
+          <span>⚠️</span><div><b>The estimable / inestimable gate fires right after this step.</b> That's the root cause — contact is captured here, <i>then</i> the customer learns if they get a price. (Shown in the workshop to keep it visible; not on the live form.)</div>
+        </div>
+
+        <!-- PROPOSED: intent + contact pref -->
+        <div class="followup hidden" id="fuIntent">
+          <span class="ftag">Proposed · post-capture, single tap</span>
+          <div class="fq">Last thing — how locked-in is this move?</div>
+          <div class="fhint">No wrong answer. Helps us get you to the right person, fast.</div>
+          <div class="seg" data-q="intent">
+            <button data-v="ready">🔥 Ready to book</button>
+            <button data-v="comparing">🟡 Comparing movers</button>
+            <button data-v="ballpark">🔵 Just a ballpark</button>
+          </div>
+          <div class="nested">
+            <div class="fq">Best way to reach you?</div>
+            <div class="seg" data-q="contactpref">
+              <button data-v="call">📞 Call me</button>
+              <button data-v="text">💬 Text me</button>
+              <button data-v="email">✉️ Just email</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="cta" onclick="goStep(5)">Continue to next step →</button>
+      </div>
+
+      <!-- ===== STEP 5 — Estimate ===== -->
+      <div class="form-body step-panel hidden" data-panel="5">
+        <h2>Your Smart Move™ estimate</h2>
+        <p class="lead">Your custom estimate, powered by 100,000+ moves.</p>
+        <div class="estprice">
+          <div class="big">$963<span style="font-size:24px">.00</span></div>
+          <div class="basis">Based on a $157 hourly rate with a 2.5 hour minimum.</div>
+          <div class="eststats">
+            <div><b>3</b>movers</div><div><b>4.5</b>hours</div><div><b>1×26'</b>truck</div><div><b>$0</b>trip fee</div>
+          </div>
+          <div class="slots">
+            <div class="slot sel">1:15 PM</div><div class="slot">1:30 PM</div>
+          </div>
+        </div>
+        <div class="walkhook">
+          🔍 <b>Price look different than expected?</b> This estimate is based on standard inventory for your location type. For a more precise quote, give us a call or <a href="#">schedule a free virtual walkthrough</a>. <span style="color:#6c7378">(This walkthrough = a sanctioned "second quote" — best info, sharpest price. The bridge to the estimate-accuracy learning loop.)</span>
+        </div>
+        <div class="compare">
+          <div class="compcard them"><h4>TYPICAL MOVING CO.</h4><ul><li>Base rate <span class="fee-red">$XXX</span></li><li>Fuel surcharge <span class="fee-red">+15-20%</span></li><li>Stair fee <span class="fee-red">+$75</span></li><li>Card processing <span class="fee-red">+3-4%</span></li></ul></div>
+          <div class="compcard us"><h4>🧠 EINSTEIN MOVING</h4><ul><li>All-inclusive <span class="fee-blue">$963</span></li><li>Fuel surcharge <span class="fee-blue">$0</span></li><li>Stair fee <span class="fee-blue">$0</span></li><li>Card processing <span class="fee-blue">$0</span></li></ul></div>
+        </div>
+        <div class="faqq"><span>How accurate is this quote?</span><span class="pl">+</span></div>
+        <div class="faqq"><span>What if my move takes less time than estimated?</span><span class="pl">+</span></div>
+        <div class="faqq"><span>Can I change my move date after booking?</span><span class="pl">+</span></div>
+        <button class="cta" onclick="goStep(6)">Review + Book →</button>
+      </div>
+
+      <!-- ===== STEP 6 — Book ===== -->
+      <div class="form-body step-panel hidden" data-panel="6">
+        <div class="mascot">🧠</div>
+        <h2>Almost done! Double-check your details</h2>
+        <p class="lead">And tell us about any little things we need to know.</p>
+        <div class="readback">
+          <div class="rrow"><span class="rk">Move Day</span><span class="rv">Fri, June 26, 2026</span></div>
+          <div class="rrow"><span class="rk">Movers</span><span class="rv">3</span></div>
+          <div class="rrow"><span class="rk">Hourly Rate</span><span class="rv">$157/hr</span></div>
+          <div class="rrow"><span class="rk">Estimated Hours</span><span class="rv">4.5 hrs</span></div>
+          <div class="rrow"><span class="rk">Trucks</span><span class="rv">1 × 26' truck</span></div>
+          <div class="rrow"><span class="rk">Total</span><span class="rv">$963.00</span></div>
+        </div>
+        <div class="field"><label>Origin considerations</label><textarea placeholder="Anything tricky about the pickup? Narrow stairwell, gate code, a large book collection, meddlesome ghosts…"></textarea></div>
+        <div class="field"><label>Destination considerations</label><textarea placeholder="Anything tricky about the drop-off?"></textarea></div>
+        <div class="gatebanner" style="background:#fdeede;color:#7a4a12"><span>💡</span><div>This free-text box already exists — but <b>inestimable customers never reach this step</b>, so it's wasted on exactly the moves that most need de-mixing. That's why the partial-move "why" has to be captured back on Step 2.</div></div>
+        <div class="tg-inline on" style="margin-bottom:6px"><span>I understand minimum prices apply and all website quotes are estimates</span><div class="miniswitch"></div></div>
+        <button class="cta">Book your move! 🎉</button>
+      </div>
+
+    </div>
+    <div class="footer-note">Prototype for internal review + KP collaboration — not the live quote form. Backend "partial-move reason" variable owned by Matisen + Fabian. Routing logic is illustrative.</div>
+  </div>
+
+  <!-- ============ RIGHT: workshop panel ============ -->
+  <div class="panel">
+    <button class="research-btn" onclick="openResearch()">📚 Research that informed this tool</button>
+    <div class="inspector">
+      <div class="ihdr">⚙️ Where this lead lands <span class="tip">i<span class="bub">The research's frame: don't sort by estimable/inestimable — sort by <b>Complexity × Intent</b>. A complex move is often the <b>most valuable</b> lead.</span></span></div>
+      <div class="grid2" id="grid2"></div>
+      <div class="verdict">
+        <span class="pill pending" id="vPill">—</span>
+        <span class="vlabel" id="vLabel">Walk the form to see routing →</span>
+      </div>
+      <div class="iline"><span class="k">Quadrant</span><span id="vQuad" style="font-weight:700">—</span></div>
+      <div class="iline"><span class="k">Intent tag</span><span id="vIntent" style="font-weight:700">—</span></div>
+      <div class="iline"><span class="k">Signals</span><span class="sigs" id="vSigs"><span class="sig">none yet</span></span></div>
+      <button class="inest-btn" onclick="openInest()">👁 See the inestimable result page — today vs proposed →</button>
+      <div class="iline" style="margin-top:11px"><span class="k" style="min-width:auto;color:#8fa6b4">⏱ Speed-to-lead <span class="tip" style="background:#34434d">i<span class="bub"><b>The #1 finding.</b> 5-min vs 30-min response ≈ <b>21× more likely to qualify</b> (HBR/MIT). The biggest leak isn't the form — it's the 2–6 hr reply time, worst on hot leads.</span></span></span></div>
+    </div>
+
+    <h3>Proposed changes</h3>
+    <p class="psub">Switch to <b>Proposed flow</b> (top right). Each toggle reveals its change on the matching step.</p>
+
+    <div class="tgroup-h">Step 1 · Location</div>
+    <div class="toggle disabled" data-tg="tenure" onclick="toggle('tenure')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">"How long in your home?" <span class="tip">i<span class="bub">Tenure proxies accumulated stuff: 2 yrs vs 20 yrs = very different move time at the same sqft. Logged as a signal first, folded into the rubric once data proves it.</span></span></div>
+        <div class="tdesc">Feeds the estimate + makes the customer feel understood.</div>
+        <div class="buckets"><span class="badge b-acc">accuracy</span><span class="badge b-conv">convert</span></div>
+      </div></div>
+    </div>
+    <div class="toggle disabled" data-tg="density" onclick="toggle('density')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">"How packed is your place?"</div>
+        <div class="tdesc">Density signal — same sqft, very different amount of stuff. De-mixes the estimate.</div>
+        <div class="buckets"><span class="badge b-demix">de-mix</span><span class="badge b-acc">accuracy</span></div>
+      </div></div>
+    </div>
+
+    <div class="tgroup-h">Step 2 · Special Items</div>
+    <div class="toggle" data-tg="why" onclick="toggle('why')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Capture the partial-move "why"</div>
+        <div class="tdesc">When they tap "just some stuff," ask what kind of move — chips, one tap. The core de-mixing move.</div>
+        <div class="buckets"><span class="badge b-demix">de-mix</span><span class="badge b-acc">accuracy</span></div>
+      </div></div>
+    </div>
+    <div class="toggle" data-tg="size" onclick="toggle('size')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Ask for an equivalent size</div>
+        <div class="tdesc">"About how much?" in plain language instead of an impossible "what %." Makes most partials estimable.</div>
+        <div class="buckets"><span class="badge b-demix">de-mix</span><span class="badge b-acc">accuracy</span></div>
+      </div></div>
+    </div>
+    <div class="toggle" data-tg="storage" onclick="toggle('storage')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Quote storage off the unit size</div>
+        <div class="tdesc">Storage move → ask unit size (10×10), price off that not the home. Turns a hard inestimable into a price.</div>
+        <div class="buckets"><span class="badge b-demix">de-mix</span></div>
+      </div></div>
+    </div>
+    <div class="toggle" data-tg="partialpack" onclick="toggle('partialpack')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Packing scope — which rooms <span class="tip">i<span class="bub">When they say "yes" to packing, ask which rooms (with a "whole house" option). Captures how much packing instead of a blind yes, and lets partial-packers say "just the kitchen + garage." Builds on Paul's Phase 2 (Thread #15).</span></span></div>
+        <div class="tdesc">After "Yes, help me pack" → ask which rooms (or "the whole house"). Scopes the packing instead of guessing.</div>
+        <div class="buckets"><span class="badge b-demix">de-mix</span><span class="badge b-acc">accuracy</span></div>
+      </div></div>
+    </div>
+    <div class="toggle" data-tg="multistop" onclick="toggle('multistop')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Multi-stop: capture the count</div>
+        <div class="tdesc">When they're "doing a crawl," ask how many stops so the route can be priced instead of bounced. Multi-stop is a most-estimable bucket.</div>
+        <div class="buckets"><span class="badge b-demix">de-mix</span></div>
+      </div></div>
+    </div>
+
+    <div class="tgroup-h">Step 3 · Date</div>
+    <div class="toggle disabled" data-tg="proximity" onclick="toggle('proximity')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Use date proximity as an intent signal <span class="tip">i<span class="bub">Behavioral, free, no question added. Moving next week skews hotter than moving in 3 months. Research: behavioral signals are the spine.</span></span></div>
+        <div class="tdesc">Auto-captured from the date they pick. Nudges the intent axis.</div>
+        <div class="buckets"><span class="badge b-intent">intent</span></div>
+      </div></div>
+    </div>
+
+    <div class="tgroup-h">Step 4 · Contact</div>
+    <div class="toggle disabled" data-tg="intentq" onclick="toggle('intentq')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Soft intent + contact preference <span class="tip">i<span class="bub">Post-capture, single tap, framed as personalization — not qualification. Capture but <b>validate against bookings before weighting</b> (research: plausible, not proven).</span></span></div>
+        <div class="tdesc">Tags hot/warm/cool for EMMA to route. Drives the intent axis above.</div>
+        <div class="buckets"><span class="badge b-intent">intent</span><span class="badge b-conv">convert</span></div>
+      </div></div>
+    </div>
+
+    <button class="resetbtn" onclick="resetAll()">↺ Reset the form</button>
+    <div class="legend">
+      <b>How a question earns its slot:</b><br>
+      <span class="badge b-demix">de-mix</span> full vs partial vs storage in one sqft band ·
+      <span class="badge b-intent">intent</span> tags lead quality ·
+      <span class="badge b-acc">accuracy</span> feeds the estimate ·
+      <span class="badge b-conv">convert</span> makes the customer feel seen.
+    </div>
+  </div>
+</div>
+
+<!-- ===== Research modal ===== -->
+<div class="modal-bg" id="researchModal" onclick="if(event.target===this)closeResearch()">
+  <div class="modal">
+    <button class="mclose" onclick="closeResearch()">×</button>
+    <h2>📚 Research that informed this tool</h2>
+    <div class="msub">From the low-intent lead research pass (June 2026). These findings shaped every proposed change + the routing logic.</div>
+
+    <div class="rfind"><div class="ric">⏱</div><div><h4>Speed-to-lead is the #1 lever</h4><p>A 5-minute vs 30-minute response is ≈ <b>21× more likely to qualify the lead</b> (HBR/MIT). Einstein's current 2–6 hr reply time is the single biggest leak — and it hurts most on the <b>hot, valuable</b> leads. Takeaway: recovering self-serve volume + routing fast beats perfecting any score.</p></div></div>
+
+    <div class="rfind"><div class="ric">🎯</div><div><h4>"Inestimable" ≠ "low intent"</h4><p>A complex move is often the <b>most valuable</b> lead. So we don't sort by estimable/inestimable — we route on <b>Complexity × Intent</b> (the 2×2 above). The Complex + Hot quadrant deserves the <b>fastest human touch</b>, not the nurture pile.</p></div></div>
+
+    <div class="rfind"><div class="ric">🧭</div><div><h4>Behavioral signals are the spine</h4><p>Move-date proximity, repeat customer, repeat visitor — free, no questions added, and the most reliable. Device, time-on-form, and back-tracking are weak and B2B-derived → <b>capture but don't weight</b> them.</p></div></div>
+
+    <div class="rfind"><div class="ric">✋</div><div><h4>Soft questions: capture, don't over-trust</h4><p>"Preferred contact method" and a readiness self-select are <b>plausible but unproven</b> intent signals. Capture them (real routing value) and <b>validate against actual bookings before weighting</b>. Frame as personalization, never as a qualifying interrogation.</p></div></div>
+
+    <div class="rfind"><div class="ric">➕</div><div><h4>Cap the added friction</h4><p>At most ~<b>two</b> optional, single-tap, post-capture questions. Every field you add costs some conversion — so each one has to earn its slot.</p></div></div>
+
+    <div class="rprinciple"><b>The rule we used:</b> every proposed change has to do at least one of —<br>
+    <b>de-mix</b> (separate full / partial / storage in one sqft band) · <b>screen intent</b> (tag lead quality) · <b>feed accuracy</b> (a signal the estimate learns from) · <b>help convert</b> (make the customer feel seen).</div>
+
+    <div class="rsource">Full report: <code>Supporting Projects/Quote Funnel Project/research/low-intent-lead-research.md</code></div>
+  </div>
+</div>
+
+<!-- ===== Inestimable result page view ===== -->
+<div class="modal-bg" id="inestimableModal" onclick="if(event.target===this)closeInest()">
+  <div class="modal" style="max-width:560px">
+    <button class="mclose" onclick="closeInest()">×</button>
+    <h2>👁 The inestimable result page</h2>
+    <div class="msub">What a customer who can't get an auto-price hits — today vs. the proposed recovery.</div>
+
+    <div class="inestcard today">
+      <div class="ihd">❌ Today — the dead-end</div>
+      <h3>Almost done…</h3>
+      <p>"Since your move is a partial move (not moving everything), we'll need a human to put the finishing touches on your estimate. One of our friendly moving pros will reach out ASAP."</p>
+      <div class="branchmini">→ then a wall of 10 branch phone numbers. No price. Many never pick up — and we don't call back fast enough.</div>
+    </div>
+
+    <div class="inestcard prop">
+      <div class="ihd">✅ Proposed — recovery</div>
+      <h3>Let's still get you a price 🧠</h3>
+      <p>Most "inestimable" moves aren't actually complex — so give them a way forward instead of a phone number.</p>
+      <div class="recovery">
+        <div class="roption"><div class="rnum">1</div><div><b>Tell us a bit more</b><span>2 taps (the de-mix capture) → instant price for simple partials, storage, multi-stop.</span></div></div>
+        <div class="roption"><div class="rnum">2</div><div><b>Book a free 2-min virtual walkthrough</b><span>Best info, sharpest price — the sanctioned "second quote."</span></div></div>
+        <div class="roption"><div class="rnum">3</div><div><b>Save your spot — we'll text your quote in minutes</b><span>Speed-to-lead: fast human touch for the genuinely complex (Complex + Hot).</span></div></div>
+      </div>
+      <div class="branchmini">…or reach your nearest branch — kept as a fallback, not the only option.</div>
+    </div>
+
+    <div class="inestcaption">The dead-end is where the ~93–95% volume jump goes to die. Recovery turns it into a price, or a fast human path for the few that truly need one.</div>
+  </div>
+</div>
+
+<script>
+  function openResearch(){document.getElementById('researchModal').classList.add('open');}
+  function closeResearch(){document.getElementById('researchModal').classList.remove('open');}
+  function openInest(){document.getElementById('inestimableModal').classList.add('open');}
+  function closeInest(){document.getElementById('inestimableModal').classList.remove('open');}
+  const state = {
+    mode:'current', step:2,
+    sel:{urgent:'no', moving:null, reason:null, eqsize:null, storagesize:null,
+         packing:'no', packrooms:[], stops2:'no', stopcount:null, items:[], tenure:null, density:null,
+         date:null, intent:null, contactpref:null},
+    tg:{tenure:true, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:true, intentq:true}
+  };
+  // which step each proposed change lives on (so toggling jumps you there to see it)
+  const STEP_FOR={tenure:1, density:1, why:2, size:2, storage:2, partialpack:2, multistop:2, proximity:3, intentq:4};
+
+  function buildGrid(){
+    const g=document.getElementById('grid2');
+    const cells=[
+      {q:'simplehot', t:'Simple + Hot', s:'Instant book · light touch', r:1,c:2},
+      {q:'complexhot', t:'⚡ Complex + Hot', s:'Fastest human touch', r:1,c:3, star:true},
+      {q:'simplecool', t:'Simple + Cool', s:'Auto-quote · nurture', r:2,c:2},
+      {q:'complexcool', t:'Complex + Cool', s:'Human · standard SLA', r:2,c:3}
+    ];
+    const yl=document.createElement('div'); yl.className='axlabel'; yl.textContent='Intent ↑'; yl.style.gridRow='1/3'; yl.style.gridColumn='1'; yl.style.writingMode='vertical-rl'; yl.style.transform='rotate(180deg)';
+    g.appendChild(yl);
+    cells.forEach(c=>{const d=document.createElement('div');d.className='quad'+(c.star?' star':'');d.dataset.quad=c.q;d.style.gridRow=c.r;d.style.gridColumn=c.c;d.innerHTML='<b>'+c.t+'</b>'+c.s;g.appendChild(d);});
+    const xl=document.createElement('div'); xl.className='axlabel'; xl.textContent='Complexity →'; xl.style.gridRow='3'; xl.style.gridColumn='2/4';
+    g.appendChild(xl);
+    g.style.gridTemplateColumns='16px 1fr 1fr'; g.style.gridTemplateRows='1fr 1fr 16px';
+  }
+
+  function buildCal(){
+    const g=document.getElementById('calgrid');
+    ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(d=>{const e=document.createElement('div');e.className='caldow';e.textContent=d;g.appendChild(e);});
+    // June 2026 starts on a Monday (1=Mon)
+    for(let d=1;d<=30;d++){
+      const b=document.createElement('button'); b.className='calday'; b.textContent=d; b.dataset.day=d;
+      if(d<4){b.classList.add('muted'); b.disabled=true;}
+      else b.addEventListener('click',()=>{state.sel.date=d; renderCal(); render();});
+      g.appendChild(b);
+    }
+  }
+  function renderCal(){
+    document.querySelectorAll('.calday').forEach(b=>b.classList.toggle('sel', +b.dataset.day===state.sel.date));
+    const note=document.getElementById('proxNote');
+    if(state.sel.date && state.mode==='proposed' && state.tg.proximity){
+      const near = state.sel.date<=12;
+      note.className='proxnote '+(near?'near':'far');
+      note.textContent = near ? '⚡ Moving soon — flagged as a hotter, higher-priority lead.' : '🔵 Plenty of runway — flagged as a lower-urgency lead (nurture).';
+      note.classList.remove('hidden');
+    } else note.classList.add('hidden');
+  }
+
+  document.querySelectorAll('.step').forEach(b=>b.addEventListener('click',()=>goStep(+b.dataset.step)));
+  function goStep(n){
+    state.step=n;
+    document.querySelectorAll('.step').forEach(s=>{const sn=+s.dataset.step;s.classList.toggle('active',sn===n);s.classList.toggle('done',sn<n);});
+    document.querySelectorAll('.step-panel').forEach(p=>p.classList.toggle('hidden',+p.dataset.panel!==n));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function setMode(m){
+    state.mode=m;
+    document.getElementById('mCurrent').classList.toggle('active',m==='current');
+    document.getElementById('mProposed').classList.toggle('active',m==='proposed');
+    syncToggleUI(); render();
+  }
+  function toggle(key){
+    // From Current mode, the first click just reveals the proposed flow (all changes on)
+    // and jumps to the step this change lives on — it does NOT flip the toggle off.
+    if(state.mode==='current'){ setMode('proposed'); goStep(STEP_FOR[key]); return; }
+    // In Proposed mode, flip just this one change and show it where it lives.
+    state.tg[key]=!state.tg[key];
+    goStep(STEP_FOR[key]);
+    syncToggleUI(); render();
+  }
+  function syncToggleUI(){
+    document.querySelectorAll('.toggle').forEach(t=>{const k=t.dataset.tg;t.classList.toggle('on',state.mode==='proposed'&&state.tg[k]);t.classList.toggle('disabled',state.mode==='current');});
+  }
+
+  document.querySelectorAll('.choices, .chips, .seg, .items').forEach(group=>{
+    const q=group.dataset.q;
+    group.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const v=btn.dataset.v;
+        if(q==='items'||q==='packrooms'){const arr=state.sel[q]; const i=arr.indexOf(v); if(i>=0)arr.splice(i,1); else arr.push(v);}
+        else{
+          state.sel[q]= state.sel[q]===v ? ((q==='urgent'||q==='packing'||q==='stops2')?v:null) : v;
+          if(q==='moving' && v!=='some'){state.sel.reason=null;state.sel.eqsize=null;state.sel.storagesize=null;}
+          if(q==='reason'){state.sel.eqsize=null;state.sel.storagesize=null;}
+          if(q==='packing' && v!=='yes'){state.sel.packrooms=[];}
+          if(q==='stops2' && v!=='yes'){state.sel.stopcount=null;}
+        }
+        render();
+      });
+    });
+  });
+
+  function render(){
+    const s=state.sel, tg=state.tg, proposed=state.mode==='proposed';
+    // step1
+    show('fuTenure', proposed && tg.tenure);
+    show('fuDensity', proposed && tg.density);
+    // step2
+    const showWhy = proposed && tg.why && s.moving==='some';
+    show('fuWhy', showWhy);
+    const qm=document.getElementById('qMoving'); if(qm) qm.classList.toggle('spotlight', s.moving==='some');
+    show('fuSize', showWhy && tg.size && s.reason && s.reason!=='storage' && s.reason!=='other');
+    show('fuStorage', showWhy && tg.storage && s.reason==='storage');
+    show('fuPackRooms', proposed && tg.partialpack && s.packing==='yes');
+    show('fuStops', proposed && tg.multistop && s.stops2==='yes');
+    // step4
+    show('fuIntent', proposed && tg.intentq);
+
+    // selection visuals
+    ['urgent','moving','packing','stops2'].forEach(q=>setSel('.choices[data-q="'+q+'"]', s[q]));
+    setSel('.chips[data-q="reason"]', s.reason);
+    ['eqsize','storagesize','stopcount','tenure','density','intent','contactpref'].forEach(q=>setSel('.seg[data-q="'+q+'"]', s[q]));
+    document.querySelectorAll('.items button').forEach(b=>b.classList.toggle('sel', s.items.includes(b.dataset.v)));
+    document.querySelectorAll('.chips[data-q="packrooms"] button').forEach(b=>b.classList.toggle('sel', s.packrooms.includes(b.dataset.v)));
+
+    renderCal();
+    updateInspector();
+  }
+  function setSel(sel,val){const g=document.querySelector(sel); if(!g)return; g.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.v===val));}
+  function show(id,on){const e=document.getElementById(id); if(e)e.classList.toggle('hidden',!on);}
+
+  function updateInspector(){
+    const s=state.sel, tg=state.tg, proposed=state.mode==='proposed';
+    const specialItems=s.items.length>0;
+    let pill='pending', label='Walk the form to see routing →';
+
+    if(s.moving==='all'){
+      pill=specialItems?'human':'est';
+      label=specialItems?'Full move + special items → light human review':'Full move, no specials → instant price.';
+    } else if(s.moving==='some'){
+      if(!proposed||!tg.why){pill='inest';label='Partial move → INESTIMABLE today (no price, "a human will call").';}
+      else if(!s.reason){pill='pending';label='Partial move — pick the "why" to route it…';}
+      else if(s.reason==='other'){pill='human';label='"Something else" → genuinely fuzzy → human (right use of a human).';}
+      else if(s.reason==='storage'){pill=(tg.storage&&s.storagesize)?'est':'pending';label=(tg.storage&&s.storagesize)?('Storage move, '+pretty(s.storagesize)+' → priced off the unit. Recovered!'):'Storage move — need the unit size.';}
+      else{pill=(tg.size&&s.eqsize)?'est':(tg.size?'pending':'est');label=(tg.size&&s.eqsize)?(reasonLabel(s.reason)+' → '+pretty(s.eqsize)+' → estimable. Recovered!'):(tg.size?(reasonLabel(s.reason)+' — ask "about how much?"'):(reasonLabel(s.reason)+' → de-mixed; estimable.'));}
+    }
+
+    const complex = specialItems || s.reason==='other' || (s.moving==='some' && (pill==='human'||pill==='inest'));
+
+    // intent: explicit question wins; else date proximity (if on)
+    let intentTag='—', hot=false, intentSet=false;
+    if(s.intent){intentSet=true;hot=s.intent==='ready';intentTag=s.intent==='ready'?'🔥 Hot':(s.intent==='comparing'?'🟡 Warm':'🔵 Cool');}
+    else if(proposed && tg.proximity && s.date){intentSet=true;hot=s.date<=12;intentTag=hot?'🔥 Hot (from date)':'🔵 Cool (from date)';}
+
+    let quad='', qlabel='—';
+    if(s.moving){quad=(complex?'complex':'simple')+(hot?'hot':'cool');qlabel=(complex?'Complex':'Simple')+' + '+(hot?'Hot':(intentSet?'Cool':'Intent?'));}
+    document.querySelectorAll('.quad').forEach(q=>q.classList.toggle('lit',q.dataset.quad===quad));
+
+    const sigs=[];
+    if(proposed){
+      if(tg.tenure&&s.tenure)sigs.push('tenure: '+pretty(s.tenure));
+      if(tg.density&&s.density)sigs.push('density: '+s.density);
+      if(tg.why&&s.reason)sigs.push('reason: '+reasonShort(s.reason));
+      if(tg.size&&s.eqsize)sigs.push('size: '+pretty(s.eqsize));
+      if(tg.storage&&s.storagesize)sigs.push('storage: '+pretty(s.storagesize));
+      if(tg.partialpack&&s.packing==='yes')sigs.push('pack: '+(s.packrooms.includes('whole')?'whole house':(s.packrooms.length?s.packrooms.length+' rooms':'yes')));
+      if(tg.multistop&&s.stopcount)sigs.push('stops: '+(s.stopcount==='4plus'?'4+':s.stopcount));
+      if(tg.proximity&&s.date)sigs.push('date: Jun '+s.date);
+      if(tg.intentq&&s.contactpref)sigs.push('contact: '+s.contactpref);
+    }
+    if(s.intent)sigs.push('intent: '+s.intent);
+
+    document.getElementById('vPill').className='pill '+pill;
+    document.getElementById('vPill').textContent=pill==='est'?'ESTIMABLE':pill==='inest'?'INESTIMABLE':pill==='human'?'HUMAN':'…';
+    document.getElementById('vLabel').textContent=label;
+    document.getElementById('vQuad').textContent=qlabel;
+    document.getElementById('vIntent').textContent=intentTag;
+    const sb=document.getElementById('vSigs');
+    sb.innerHTML=sigs.length?sigs.map(x=>'<span class="sig">'+x+'</span>').join(''):'<span class="sig">none yet</span>';
+  }
+
+  function reasonLabel(r){return {furniture:'Just some furniture',college:'College move',reno:'One renovated room',downsize:'Downsizing / splitting',stops:'A few pickup stops'}[r]||r;}
+  function reasonShort(r){return {furniture:'furniture-only',storage:'storage',college:'kids-to-college',reno:'renovation',downsize:'downsize/half',stops:'multi-stop',other:'other'}[r]||r;}
+  function pretty(v){return {fewitems:'a few items','1br':'1-bedroom','2br':'2-bedroom',most:'most of home','5x5':'5×5','5x10':'5×10','10x10':'10×10','10x15':'10×15','10x20':'10×20',lt2:'<2 yrs','2to5':'2–5 yrs','5to10':'5–10 yrs',gt10:'10+ yrs'}[v]||v;}
+
+  function resetAll(){
+    state.sel={urgent:'no',moving:null,reason:null,eqsize:null,storagesize:null,packing:'no',stops2:'no',items:[],tenure:null,density:null,date:null,intent:null,contactpref:null};
+    render();
+  }
+
+  // Trade-off context for each proposed change (the cost side, for KP + other viewers)
+  const TRADEOFFS={
+    tenure:"Adds a question = a little friction, but it's one tap and feels personal, so low risk. Don't price on it until the data proves the correlation — log it as a signal first.",
+    density:"Self-assessed, so it's noisy ('about average' bias). Treat as a soft signal that nudges the estimate, and validate against actual move times before weighting it.",
+    why:"Only fires for partial movers, so the friction is contained. Watch the 'Other' bucket — if it gets big, the categories need refining. The whole point is to stop dumping simple partials to a human.",
+    size:"A customer eyeballing 'how much' is imprecise. It's far better than an impossible 'what %', but still validate, and pair it with the virtual walkthrough for big or fuzzy jobs.",
+    storage:"Storage units get packed very differently, so quoting off unit size can over- or under-shoot. Good default for small units; flag larger ones for a quick confirm.",
+    partialpack:"Adds a step after 'Yes.' Worth it — it stops partial-packers from force-fitting into a blind yes/no — but full-pack folks must be able to say 'whole house' in one tap so it doesn't feel like extra work.",
+    multistop:"A stop count isn't a full route, so long/complex crawls still need human routing. This is just enough to keep simple 2–3 stop moves estimable instead of bouncing them.",
+    proximity:"Free and behavioral, but far-out dates aren't always low intent — planners book early. Use it to nudge the intent axis, never to gate or deprioritize on its own.",
+    intentq:"Self-reported intent is gameable and, per the research, unproven. Capture it for routing value, but validate against actual bookings before you weight it — and frame it as personalization, not a qualifying test."
+  };
+  function buildTradeoffs(){
+    document.querySelectorAll('.toggle').forEach(t=>{
+      const key=t.dataset.tg, txt=TRADEOFFS[key]; if(!txt) return;
+      const content=t.querySelector('.trow > div:last-child'); if(!content) return;
+      const wrap=document.createElement('div'); wrap.className='tradeoff';
+      const btn=document.createElement('button'); btn.className='tobtn'; btn.innerHTML='<span class="car">▸</span> Trade-off';
+      btn.addEventListener('click',e=>{e.stopPropagation(); wrap.classList.toggle('open');});
+      const body=document.createElement('div'); body.className='tobody'; body.textContent=txt;
+      wrap.appendChild(btn); wrap.appendChild(body); content.appendChild(wrap);
+    });
+  }
+
+  buildGrid(); buildCal(); buildTradeoffs(); syncToggleUI(); render();
+</script>
+</body>
+</html>
