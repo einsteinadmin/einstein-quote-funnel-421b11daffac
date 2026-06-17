@@ -481,6 +481,16 @@
           <div class="calgrid" id="calgrid"></div>
         </div>
         <div class="proxnote hidden" id="proxNote"></div>
+        <div class="followup hidden" id="fuFlex">
+          <span class="ftag">Proposed · steer flexible movers to a softer (cheaper) day</span>
+          <div class="fq">Any wiggle room on your date?</div>
+          <div class="fhint">Some days cost less than others — a little flexibility can unlock a better rate. 💸</div>
+          <div class="seg" data-q="flex">
+            <button data-v="set">📌 Nope, this is the day</button>
+            <button data-v="few">📅 A few days either way</button>
+            <button data-v="lots">🤙 Pretty flexible — no rush</button>
+          </div>
+        </div>
         <button class="cta" onclick="goStep(4)">Continue to next step →</button>
       </div>
 
@@ -653,6 +663,13 @@
     </div>
 
     <div class="tgroup-h">Step 3 · Date</div>
+    <div class="toggle" data-tg="dateflex" onclick="toggle('dateflex')">
+      <div class="trow"><div class="switch"></div><div>
+        <div class="tlabel">Date flexibility → steer to a softer day <span class="tip">i<span class="bub">Net-new field (Cameron-added, after KP's review). Flexibility can't be derived on the backend — you have to ask. Pairs with Variable Pricing: a flexible mover is a chance to fill a low-demand day at a better rate.</span></span></div>
+        <div class="tdesc">One tap: locked in / a few days / very flexible. Flexible movers can be steered to a cheaper, lower-demand day — they save, we lift TUR. Captured on the form; VP acts on it.</div>
+        <div class="buckets"><span class="badge b-conv">convert</span></div>
+      </div></div>
+    </div>
     <div class="toggle disabled" data-tg="proximity" onclick="toggle('proximity')">
       <div class="trow"><div class="switch"></div><div>
         <div class="tlabel">Use date proximity as an intent signal <span class="tip">i<span class="bub">Behavioral, free, no question added. Moving next week skews hotter than moving in 3 months. Research: behavioral signals are the spine.</span></span></div>
@@ -763,12 +780,12 @@
     mode:'proposed', step:1,
     sel:{urgent:'no', moving:null, reason:null, eqsize:null, storagesize:null,
          packing:'no', packrooms:[], stops2:'no', stopcount:null, items:[], tenure:null, density:null,
-         date:null, intent:null, contactpref:null},
-    tg:{tenure:false, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:false, intentq:true},
+         date:null, flex:null, intent:null, contactpref:null},
+    tg:{tenure:false, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, dateflex:true, proximity:false, intentq:true},
     notes:{}, overallNote:''
   };
   // which step each proposed change lives on (so toggling jumps you there to see it)
-  const STEP_FOR={tenure:1, density:1, why:2, size:2, storage:2, partialpack:2, multistop:2, proximity:3, intentq:4};
+  const STEP_FOR={tenure:1, density:1, why:2, size:2, storage:2, partialpack:2, multistop:2, dateflex:3, proximity:3, intentq:4};
 
   function buildGrid(){
     const g=document.getElementById('grid2');
@@ -858,13 +875,15 @@
     show('fuStorage', showWhy && tg.storage && s.reason==='storage');
     show('fuPackRooms', proposed && tg.partialpack && s.packing==='yes');
     show('fuStops', proposed && tg.multistop && s.stops2==='yes');
+    // step3
+    show('fuFlex', proposed && tg.dateflex);
     // step4
     show('fuIntent', proposed && tg.intentq);
 
     // selection visuals
     ['urgent','moving','packing','stops2'].forEach(q=>setSel('.choices[data-q="'+q+'"]', s[q]));
     setSel('.chips[data-q="reason"]', s.reason);
-    ['eqsize','storagesize','stopcount','tenure','density','intent','contactpref'].forEach(q=>setSel('.seg[data-q="'+q+'"]', s[q]));
+    ['eqsize','storagesize','stopcount','tenure','density','flex','intent','contactpref'].forEach(q=>setSel('.seg[data-q="'+q+'"]', s[q]));
     document.querySelectorAll('.items button').forEach(b=>b.classList.toggle('sel', s.items.includes(b.dataset.v)));
     document.querySelectorAll('.chips[data-q="packrooms"] button').forEach(b=>b.classList.toggle('sel', s.packrooms.includes(b.dataset.v)));
 
@@ -910,6 +929,7 @@
       if(tg.storage&&s.storagesize)sigs.push('storage: '+pretty(s.storagesize));
       if(tg.partialpack&&s.packing==='yes')sigs.push('pack: '+(s.packrooms.includes('whole')?'whole house':(s.packrooms.length?s.packrooms.length+' rooms':'yes')));
       if(tg.multistop&&s.stopcount)sigs.push('stops: '+(s.stopcount==='3plus'?'3+':s.stopcount));
+      if(tg.dateflex&&s.flex)sigs.push('flex: '+pretty(s.flex));
       if(tg.proximity&&s.date)sigs.push('date: Jun '+s.date);
       if(tg.intentq&&s.contactpref)sigs.push('contact: '+s.contactpref);
     }
@@ -926,10 +946,10 @@
 
   function reasonLabel(r){return {furniture:'Just some furniture',college:'College move',reno:'One renovated room',downsize:'Downsizing / splitting',stops:'A few pickup stops'}[r]||r;}
   function reasonShort(r){return {furniture:'furniture-only',storage:'storage',college:'kids-to-college',reno:'renovation',downsize:'downsize/half',stops:'multi-stop',other:'other'}[r]||r;}
-  function pretty(v){return {fewitems:'a few pieces','1br':'1-bedroom','2br':'2-bedroom',most:'3+ bedrooms','5x5':'5×5','5x10':'5×10','10x10':'10×10','10x15':'10×15','10x20':'10×20',lt2:'<2 yrs','2to5':'2–5 yrs','5to10':'5–10 yrs',gt10:'10+ yrs'}[v]||v;}
+  function pretty(v){return {fewitems:'a few pieces','1br':'1-bedroom','2br':'2-bedroom',most:'3+ bedrooms',set:'date set',few:'±a few days',lots:'very flexible','5x5':'5×5','5x10':'5×10','10x10':'10×10','10x15':'10×15','10x20':'10×20',lt2:'<2 yrs','2to5':'2–5 yrs','5to10':'5–10 yrs',gt10:'10+ yrs'}[v]||v;}
 
   function resetAll(){
-    state.sel={urgent:'no',moving:null,reason:null,eqsize:null,storagesize:null,packing:'no',stops2:'no',items:[],tenure:null,density:null,date:null,intent:null,contactpref:null};
+    state.sel={urgent:'no',moving:null,reason:null,eqsize:null,storagesize:null,packing:'no',packrooms:[],stops2:'no',stopcount:null,items:[],tenure:null,density:null,date:null,flex:null,intent:null,contactpref:null};
     render();
   }
 
@@ -942,6 +962,7 @@
     storage:"Storage units get packed very differently, so quoting off unit size can over- or under-shoot. Good default for small units; flag larger ones for a quick confirm.",
     partialpack:"Adds a step after 'Yes.' Worth it — it stops partial-packers from force-fitting into a blind yes/no — but full-pack folks must be able to say 'whole house' in one tap so it doesn't feel like extra work.",
     multistop:"A stop count isn't a full route, so long/complex crawls still need human routing. This is just enough to keep simple 2–3 stop moves estimable instead of bouncing them.",
+    dateflex:"One extra tap on the date step. Worth it — asking is the only way to know if you can steer them to a cheaper day, and the savings framing means it helps conversion more than it costs. It only pays off once VP rates are wired so the form (or EMMA) can actually surface the cheaper option.",
     proximity:"Free and behavioral, but far-out dates aren't always low intent — planners book early. Use it to nudge the intent axis, never to gate or deprioritize on its own.",
     intentq:"Self-reported intent is gameable and, per the research, unproven. Capture it for routing value, but validate against actual bookings before you weight it — and frame it as personalization, not a qualifying test."
   };
@@ -954,6 +975,7 @@
     storage:{v:'keep', n:'Quote off the storage unit size — no copy change.'},
     partialpack:{v:'keep', n:'Copy locked: “Which rooms need packing? Lets us scope the packing instead of guessing. Tap all that apply, or ‘the whole house’ if it’s everything.”'},
     multistop:{v:'keep', n:'Options locked: 1 stop / 2 stops / 3+ stops.'},
+    dateflex:{v:'keep', n:'NEW (Cameron-added, after KP review): one-tap “Any wiggle room on your date?” → 📌 Nope, this is the day / 📅 A few days either way / 🤙 Pretty flexible — no rush. Front end captures the tier; backend tags it + feeds Variable Pricing to steer flexible movers to a softer, cheaper day. Phase-2: surface the live savings (“move Tue, save $X”) once VP rates are wired to the form.'},
     proximity:{v:'cut', n:'No front-end element. Date proximity is captured by the backend as an intent signal — nothing needed on the form.'},
     intentq:{v:'keep', n:'Keep “Last thing. How locked-in is this move?” Removed the “best way to reach you” contact preference — they’ve already left contact info.'}
   };
@@ -991,6 +1013,7 @@
     tenure:'"How long in your home?" (tenure)', density:'"How packed is your place?" (density)',
     why:'Capture the partial-move "why"', size:'Ask for an equivalent size', storage:'Quote storage off the unit size',
     partialpack:'Packing scope — which rooms', multistop:'Multi-stop: capture the count',
+    dateflex:'Date flexibility → steer to a softer day',
     proximity:'Use date proximity as an intent signal', intentq:'Soft intent + contact preference'
   };
   function exportDecisions(){
