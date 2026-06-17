@@ -764,7 +764,7 @@
     sel:{urgent:'no', moving:null, reason:null, eqsize:null, storagesize:null,
          packing:'no', packrooms:[], stops2:'no', stopcount:null, items:[], tenure:null, density:null,
          date:null, intent:null, contactpref:null},
-    tg:{tenure:false, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:true, intentq:true},
+    tg:{tenure:false, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:false, intentq:true},
     notes:{}, overallNote:''
   };
   // which step each proposed change lives on (so toggling jumps you there to see it)
@@ -799,14 +799,8 @@
   }
   function renderCal(){
     document.querySelectorAll('.calday').forEach(b=>b.classList.toggle('sel', +b.dataset.day===state.sel.date));
-    const note=document.getElementById('proxNote');
-    // Moving-soon urgency ONLY (KP decision): nudge when the date is near; show nothing otherwise
-    // — never tell a customer they're a low-priority/nurture lead.
-    if(state.sel.date && state.mode==='proposed' && state.tg.proximity && state.sel.date<=12){
-      note.className='proxnote near';
-      note.textContent = '⚡ Moving soon? Lock it in — these dates book up fast.';
-      note.classList.remove('hidden');
-    } else note.classList.add('hidden');
+    // Date proximity is a BACKEND intent signal only — no front-end element (KP + Cameron, 6/17).
+    document.getElementById('proxNote').classList.add('hidden');
   }
 
   document.querySelectorAll('.step').forEach(b=>b.addEventListener('click',()=>goStep(+b.dataset.step)));
@@ -960,7 +954,7 @@
     storage:{v:'keep', n:'Quote off the storage unit size — no copy change.'},
     partialpack:{v:'keep', n:'Copy locked: “Which rooms need packing? Lets us scope the packing instead of guessing. Tap all that apply, or ‘the whole house’ if it’s everything.”'},
     multistop:{v:'keep', n:'Options locked: 1 stop / 2 stops / 3+ stops.'},
-    proximity:{v:'mod', n:'Show a light “moving soon” urgency nudge ONLY when the date is near — never show a low-priority / nurture message to the customer.'},
+    proximity:{v:'cut', n:'No front-end element. Date proximity is captured by the backend as an intent signal — nothing needed on the form.'},
     intentq:{v:'keep', n:'Keep “Last thing. How locked-in is this move?” Removed the “best way to reach you” contact preference — they’ve already left contact info.'}
   };
   const VLABEL={keep:'✅ KEEP', cut:'❌ CUT', mod:'✏️ MODIFIED'};
