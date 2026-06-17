@@ -259,20 +259,30 @@
   .export-btn{width:100%;margin-top:10px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:background 150ms}
   .export-btn:hover{background:#0a6cab}
   .reviewhint{font-size:11px;color:#9aa1a6;margin-top:8px;line-height:1.5}
+  .finalbar{background:#15803d;color:#fff;padding:9px 22px;font-size:13px;font-weight:700;display:flex;gap:9px;align-items:center}
+  .verdict-row{margin-top:8px;display:flex;gap:7px;align-items:flex-start}
+  .vchip{font-size:10px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap}
+  .vchip-keep{background:#dcfce7;color:#15803d}
+  .vchip-cut{background:#fee2e2;color:#b91c1c}
+  .vchip-mod{background:#fef3c7;color:#a16207}
+  .vnote{font-size:11px;color:#5a6166;line-height:1.45}
+  .toggle.final-cut{opacity:.6}
+  .toggle.final-cut .tlabel{text-decoration:line-through;text-decoration-color:rgba(192,57,43,.4)}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div>
-    <h1>Quote Funnel Workshop — Full Flow 🧠</h1>
-    <div class="sub">All six steps are live and clickable. Toggle proposed changes, walk the funnel, watch the routing on the right. Not the live form — built from screenshots, details approximate.</div>
+    <h1>Quote Funnel — Final Build Spec ✅</h1>
+    <div class="sub">KP-approved 6/16/2026 · locked for build. Walk all six steps in the <b>Proposed flow</b> to see exactly what ships; the panel on the right lists every decision + the agreed copy. Built from screenshots — copy is final, visual details approximate.</div>
   </div>
   <div class="mode-switch">
-    <button id="mCurrent" class="active" onclick="setMode('current')">Current form</button>
-    <button id="mProposed" onclick="setMode('proposed')">Proposed flow</button>
+    <button id="mCurrent" onclick="setMode('current')">Current form</button>
+    <button id="mProposed" class="active" onclick="setMode('proposed')">Final flow</button>
   </div>
 </div>
+<div class="finalbar">✅ FINAL — decisions locked for build (KP-approved 6/16/2026). For Jeff: this is the spec. Each decision on the right shows what's IN / OUT and the exact copy.</div>
 
 <div class="wrap">
   <div class="stage">
@@ -344,7 +354,7 @@
         <div class="followup hidden" id="fuDensity">
           <span class="ftag">Proposed · de-mix + accuracy</span>
           <div class="fq">How packed is your place, honestly?</div>
-          <div class="fhint">Same square footage can mean wildly different amounts of stuff — this helps us get it right.</div>
+          <div class="fhint">Same square footage can mean wildly different amounts of stuff, this information helps us get it right.</div>
           <div class="seg" data-q="density">
             <button data-v="light">Pretty minimal</button>
             <button data-v="avg">About average</button>
@@ -377,25 +387,23 @@
           </div>
           <div class="followup hidden" id="fuWhy">
             <span class="ftag">Proposed · de-mix the partial bucket</span>
-            <div class="fq">Got it — what's the story with this move?</div>
-            <div class="fhint">This helps us price it right instead of bumping you to a phone call. 👇</div>
+            <div class="fq">Got it! What's the story about this move?</div>
+            <div class="fhint">This helps us get you a real number, rather than bumping you to a phone call. 👇</div>
             <div class="chips" data-q="reason">
               <button class="chip" data-v="furniture">Just some furniture</button>
               <button class="chip" data-v="storage">Moving to / from storage</button>
               <button class="chip" data-v="college">Kid heading to college</button>
-              <button class="chip" data-v="reno">One renovated room</button>
               <button class="chip" data-v="downsize">Downsizing / splitting a home</button>
-              <button class="chip" data-v="stops">A few stops, picking things up</button>
               <button class="chip" data-v="other">Something else</button>
             </div>
             <div class="nested hidden" id="fuSize">
               <div class="fq">About how much are we moving?</div>
-              <div class="fhint">No need to measure — just ballpark it. (Way easier than "what percent?")</div>
+              <div class="fhint">No need to measure — just ballpark it.</div>
               <div class="seg" data-q="eqsize">
-                <button data-v="fewitems">A few items</button>
+                <button data-v="fewitems">A Few Pieces</button>
                 <button data-v="1br">About a 1-bedroom's worth</button>
                 <button data-v="2br">About a 2-bedroom's worth</button>
-                <button data-v="most">Most of the house</button>
+                <button data-v="most">3+ Bedrooms Worth</button>
               </div>
             </div>
             <div class="nested hidden" id="fuStorage">
@@ -418,7 +426,7 @@
           <div class="followup hidden" id="fuPackRooms">
             <span class="ftag">Proposed · how much packing?</span>
             <div class="fq">Which rooms need packing?</div>
-            <div class="fhint">Tap all that apply — or "the whole house" if it's everything. Lets us scope the packing instead of guessing.</div>
+            <div class="fhint">Lets us scope the packing instead of guessing. Tap all that apply, or "the whole house" if it's everything.</div>
             <div class="chips" data-q="packrooms">
               <button class="chip" data-v="whole">The whole house 🏠</button>
               <button class="chip" data-v="kitchen">Kitchen</button>
@@ -442,9 +450,9 @@
             <div class="fq">How many stops total?</div>
             <div class="fhint">A quick count lets us price the route instead of bumping you to a call.</div>
             <div class="seg" data-q="stopcount">
+              <button data-v="1">1 stop</button>
               <button data-v="2">2 stops</button>
-              <button data-v="3">3 stops</button>
-              <button data-v="4plus">4+ stops</button>
+              <button data-v="3plus">3+ stops</button>
             </div>
           </div>
         </div>
@@ -508,20 +516,12 @@
         <!-- PROPOSED: intent + contact pref -->
         <div class="followup hidden" id="fuIntent">
           <span class="ftag">Proposed · post-capture, single tap</span>
-          <div class="fq">Last thing — how locked-in is this move?</div>
-          <div class="fhint">No wrong answer. Helps us get you to the right person, fast.</div>
+          <div class="fq">Last thing. How locked-in is this move?</div>
+          <div class="fhint">No wrong answer. This just helps us get you to the right person, fast.</div>
           <div class="seg" data-q="intent">
             <button data-v="ready">🔥 Ready to book</button>
             <button data-v="comparing">🟡 Comparing movers</button>
             <button data-v="ballpark">🔵 Just a ballpark</button>
-          </div>
-          <div class="nested">
-            <div class="fq">Best way to reach you?</div>
-            <div class="seg" data-q="contactpref">
-              <button data-v="call">📞 Call me</button>
-              <button data-v="text">💬 Text me</button>
-              <button data-v="email">✉️ Just email</button>
-            </div>
           </div>
         </div>
 
@@ -596,8 +596,8 @@
       <div class="iline" style="margin-top:11px"><span class="k" style="min-width:auto;color:#8fa6b4">⏱ Speed-to-lead <span class="tip" style="background:#34434d">i<span class="bub"><b>The #1 finding.</b> 5-min vs 30-min response ≈ <b>21× more likely to qualify</b> (HBR/MIT). The biggest leak isn't the form — it's the 2–6 hr reply time, worst on hot leads.</span></span></span></div>
     </div>
 
-    <h3>Proposed changes</h3>
-    <p class="psub">Switch to <b>Proposed flow</b> (top right). Each toggle reveals its change on the matching step.</p>
+    <h3>✅ Final decisions — locked for build</h3>
+    <p class="psub">KP-approved 6/16/2026. Each row shows the verdict + the agreed copy/spec. Click a row to jump to where it lives in the form. Decisions are locked here — not editable.</p>
 
     <div class="tgroup-h">Step 1 · Location</div>
     <div class="toggle disabled" data-tg="tenure" onclick="toggle('tenure')">
@@ -673,11 +673,8 @@
     <button class="resetbtn" onclick="resetAll()">↺ Reset the form</button>
 
     <div class="review-sec">
-      <h3>📝 Your review → export</h3>
-      <div class="rlabel">Overall notes (optional)</div>
-      <textarea id="overallNote" class="notearea" placeholder="Big-picture reactions, things to add or cut, questions for KP…"></textarea>
-      <button class="export-btn" id="exportBtn" onclick="exportDecisions()">⬇ Export decisions (.md + copy)</button>
-      <div class="reviewhint">Exports every change as <b>Keep</b> (toggle on) / <b>Cut</b> (toggle off) + your per-change notes + overall notes — the doc the designers/devs run with. Saved in this browser, so a refresh won't lose it. <i>Note: each viewer's notes are local to their browser — for a shared review, drive it live and export once, or have each person export and send it over.</i></div>
+      <h3>🔨 For the developer</h3>
+      <div class="reviewhint">This is the locked spec — build the <b>Final flow</b> exactly as shown, using the copy in each decision above. Implementation path + timeline are on the <b>Kick Point pulse</b>. Questions on routing/intent → Cameron; the backend "partial-move reason" variable + form intake → Matisen + Fabian.</div>
     </div>
 
     <div class="legend">
@@ -760,12 +757,14 @@
   function closeResearch(){document.getElementById('researchModal').classList.remove('open');}
   function openInest(){document.getElementById('inestimableModal').classList.add('open');}
   function closeInest(){document.getElementById('inestimableModal').classList.remove('open');}
+  // FINAL build spec (KP-approved 6/16/2026): decisions are locked — toggles no longer flip.
+  const LOCKED = true;
   const state = {
-    mode:'current', step:2,
+    mode:'proposed', step:1,
     sel:{urgent:'no', moving:null, reason:null, eqsize:null, storagesize:null,
          packing:'no', packrooms:[], stops2:'no', stopcount:null, items:[], tenure:null, density:null,
          date:null, intent:null, contactpref:null},
-    tg:{tenure:true, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:true, intentq:true},
+    tg:{tenure:false, density:true, why:true, size:true, storage:true, partialpack:true, multistop:true, proximity:true, intentq:true},
     notes:{}, overallNote:''
   };
   // which step each proposed change lives on (so toggling jumps you there to see it)
@@ -801,10 +800,11 @@
   function renderCal(){
     document.querySelectorAll('.calday').forEach(b=>b.classList.toggle('sel', +b.dataset.day===state.sel.date));
     const note=document.getElementById('proxNote');
-    if(state.sel.date && state.mode==='proposed' && state.tg.proximity){
-      const near = state.sel.date<=12;
-      note.className='proxnote '+(near?'near':'far');
-      note.textContent = near ? '⚡ Moving soon — flagged as a hotter, higher-priority lead.' : '🔵 Plenty of runway — flagged as a lower-urgency lead (nurture).';
+    // Moving-soon urgency ONLY (KP decision): nudge when the date is near; show nothing otherwise
+    // — never tell a customer they're a low-priority/nurture lead.
+    if(state.sel.date && state.mode==='proposed' && state.tg.proximity && state.sel.date<=12){
+      note.className='proxnote near';
+      note.textContent = '⚡ Moving soon? Lock it in — these dates book up fast.';
       note.classList.remove('hidden');
     } else note.classList.add('hidden');
   }
@@ -824,14 +824,10 @@
     syncToggleUI(); render();
   }
   function toggle(key){
-    // From Current mode, the first click just reveals the proposed flow (all changes on)
-    // and jumps to the step this change lives on — it does NOT flip the toggle off.
-    if(state.mode==='current'){ setMode('proposed'); goStep(STEP_FOR[key]); return; }
-    // In Proposed mode, flip just this one change and show it where it lives.
-    state.tg[key]=!state.tg[key];
-    persist();
+    // FINAL spec — decisions are locked (no flipping). Clicking a row just jumps to the
+    // step where the change lives so a reviewer/dev can see it in context.
+    if(state.mode==='current'){ setMode('proposed'); }
     goStep(STEP_FOR[key]);
-    syncToggleUI(); render();
   }
   function syncToggleUI(){
     document.querySelectorAll('.toggle').forEach(t=>{const k=t.dataset.tg;t.classList.toggle('on',state.mode==='proposed'&&state.tg[k]);t.classList.toggle('disabled',state.mode==='current');});
@@ -919,7 +915,7 @@
       if(tg.size&&s.eqsize)sigs.push('size: '+pretty(s.eqsize));
       if(tg.storage&&s.storagesize)sigs.push('storage: '+pretty(s.storagesize));
       if(tg.partialpack&&s.packing==='yes')sigs.push('pack: '+(s.packrooms.includes('whole')?'whole house':(s.packrooms.length?s.packrooms.length+' rooms':'yes')));
-      if(tg.multistop&&s.stopcount)sigs.push('stops: '+(s.stopcount==='4plus'?'4+':s.stopcount));
+      if(tg.multistop&&s.stopcount)sigs.push('stops: '+(s.stopcount==='3plus'?'3+':s.stopcount));
       if(tg.proximity&&s.date)sigs.push('date: Jun '+s.date);
       if(tg.intentq&&s.contactpref)sigs.push('contact: '+s.contactpref);
     }
@@ -936,7 +932,7 @@
 
   function reasonLabel(r){return {furniture:'Just some furniture',college:'College move',reno:'One renovated room',downsize:'Downsizing / splitting',stops:'A few pickup stops'}[r]||r;}
   function reasonShort(r){return {furniture:'furniture-only',storage:'storage',college:'kids-to-college',reno:'renovation',downsize:'downsize/half',stops:'multi-stop',other:'other'}[r]||r;}
-  function pretty(v){return {fewitems:'a few items','1br':'1-bedroom','2br':'2-bedroom',most:'most of home','5x5':'5×5','5x10':'5×10','10x10':'10×10','10x15':'10×15','10x20':'10×20',lt2:'<2 yrs','2to5':'2–5 yrs','5to10':'5–10 yrs',gt10:'10+ yrs'}[v]||v;}
+  function pretty(v){return {fewitems:'a few pieces','1br':'1-bedroom','2br':'2-bedroom',most:'3+ bedrooms','5x5':'5×5','5x10':'5×10','10x10':'10×10','10x15':'10×15','10x20':'10×20',lt2:'<2 yrs','2to5':'2–5 yrs','5to10':'5–10 yrs',gt10:'10+ yrs'}[v]||v;}
 
   function resetAll(){
     state.sel={urgent:'no',moving:null,reason:null,eqsize:null,storagesize:null,packing:'no',stops2:'no',items:[],tenure:null,density:null,date:null,intent:null,contactpref:null};
@@ -955,12 +951,32 @@
     proximity:"Free and behavioral, but far-out dates aren't always low intent — planners book early. Use it to nudge the intent axis, never to gate or deprioritize on its own.",
     intentq:"Self-reported intent is gameable and, per the research, unproven. Capture it for routing value, but validate against actual bookings before you weight it — and frame it as personalization, not a qualifying test."
   };
-  function setNoteLabel(btn,val){ btn.innerHTML='<span class="car">▸</span> ✎ Note / request a change'+(val&&val.trim()?' <span style="color:var(--orange)">●</span>':''); }
+  // FINAL build spec — KP-approved 6/16/2026. Verdict + agreed copy per change, shown read-only.
+  const FINAL_SPEC={
+    tenure:{v:'cut', n:'Too personal, and doesn’t reliably track how much stuff someone has (a 20-yr resident can be tidy; a 2-week one a hoarder).'},
+    density:{v:'keep', n:'Copy locked: “Same square footage can mean wildly different amounts of stuff, this information helps us get it right.”'},
+    why:{v:'keep', n:'Copy locked: “Got it! What’s the story about this move? This helps us get you a real number, rather than bumping you to a phone call.” Reasons trimmed — removed “one renovated room” (no non-storage use case) and “a few stops” (redundant with the additional-stops question).'},
+    size:{v:'keep', n:'“About how much are we moving? No need to measure, just ballpark it.” Buttons: A Few Pieces / 1-bedroom / 2-bedroom / 3+ Bedrooms Worth.'},
+    storage:{v:'keep', n:'Quote off the storage unit size — no copy change.'},
+    partialpack:{v:'keep', n:'Copy locked: “Which rooms need packing? Lets us scope the packing instead of guessing. Tap all that apply, or ‘the whole house’ if it’s everything.”'},
+    multistop:{v:'keep', n:'Options locked: 1 stop / 2 stops / 3+ stops.'},
+    proximity:{v:'mod', n:'Show a light “moving soon” urgency nudge ONLY when the date is near — never show a low-priority / nurture message to the customer.'},
+    intentq:{v:'keep', n:'Keep “Last thing. How locked-in is this move?” Removed the “best way to reach you” contact preference — they’ve already left contact info.'}
+  };
+  const VLABEL={keep:'✅ KEEP', cut:'❌ CUT', mod:'✏️ MODIFIED'};
   function buildTradeoffs(){
     document.querySelectorAll('.toggle').forEach(t=>{
       const key=t.dataset.tg; if(!key) return;
       const content=t.querySelector('.trow > div:last-child'); if(!content) return;
-      // Trade-off expander
+      // Locked verdict + agreed copy (read-only)
+      const spec=FINAL_SPEC[key];
+      if(spec){
+        t.classList.add('final-'+spec.v);
+        const v=document.createElement('div'); v.className='verdict-row';
+        v.innerHTML='<span class="vchip vchip-'+spec.v+'">'+VLABEL[spec.v]+'</span><span class="vnote">'+spec.n+'</span>';
+        content.appendChild(v);
+      }
+      // Trade-off expander (kept — useful context for the dev)
       const txt=TRADEOFFS[key];
       if(txt){
         const wrap=document.createElement('div'); wrap.className='tradeoff';
@@ -969,17 +985,6 @@
         const body=document.createElement('div'); body.className='tobody'; body.textContent=txt;
         wrap.appendChild(btn); wrap.appendChild(body); content.appendChild(wrap);
       }
-      // Note / request-a-change expander
-      const nwrap=document.createElement('div'); nwrap.className='tradeoff';
-      const nbtn=document.createElement('button'); nbtn.className='tobtn';
-      const nbody=document.createElement('div'); nbody.className='tobody'; nbody.style.background='none'; nbody.style.border='none'; nbody.style.padding='0';
-      const ta=document.createElement('textarea'); ta.className='notearea'; ta.placeholder='e.g. move to Step 1 · reword to… · cut this · add a question for X';
-      ta.value=state.notes[key]||'';
-      ta.addEventListener('click',e=>e.stopPropagation());
-      ta.addEventListener('input',()=>{state.notes[key]=ta.value; persist(); setNoteLabel(nbtn,ta.value);});
-      nbtn.addEventListener('click',e=>{e.stopPropagation(); nwrap.classList.toggle('open');});
-      nbody.appendChild(ta); nwrap.appendChild(nbtn); nwrap.appendChild(nbody); content.appendChild(nwrap);
-      setNoteLabel(nbtn, state.notes[key]||'');
     });
   }
 
@@ -1010,10 +1015,8 @@
     const b=document.getElementById('exportBtn'); if(b){const o=b.textContent;b.textContent='✓ Downloaded + copied';setTimeout(()=>{b.textContent=o;},1800);}
   }
 
-  loadPersisted();
-  buildGrid(); buildCal(); buildTradeoffs(); syncToggleUI(); render();
-  const onEl=document.getElementById('overallNote');
-  if(onEl){ onEl.value=state.overallNote; onEl.addEventListener('input',()=>{state.overallNote=onEl.value; persist();}); }
+  // FINAL spec — do NOT loadPersisted() (a prior reviewer's localStorage must not override the locked decisions).
+  buildGrid(); buildCal(); buildTradeoffs(); setMode('proposed');
 </script>
 </body>
 </html>
