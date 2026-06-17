@@ -482,9 +482,9 @@
         </div>
         <div class="proxnote hidden" id="proxNote"></div>
         <div class="followup hidden" id="fuFlex">
-          <span class="ftag">Proposed · steer flexible movers to a softer (cheaper) day</span>
+          <span class="ftag">Proposed · capture date flexibility (intent + scheduling fit)</span>
           <div class="fq">Any wiggle room on your date?</div>
-          <div class="fhint">Some days cost less than others — a little flexibility can unlock a better rate. 💸</div>
+          <div class="fhint">If your first-choice day is full, knowing your flexibility helps us find you the next best slot.</div>
           <div class="seg" data-q="flex">
             <button data-v="set">📌 Nope, this is the day</button>
             <button data-v="few">📅 A few days either way</button>
@@ -665,9 +665,9 @@
     <div class="tgroup-h">Step 3 · Date</div>
     <div class="toggle" data-tg="dateflex" onclick="toggle('dateflex')">
       <div class="trow"><div class="switch"></div><div>
-        <div class="tlabel">Date flexibility → steer to a softer day <span class="tip">i<span class="bub">Net-new field (Cameron-added, after KP's review). Flexibility can't be derived on the backend — you have to ask. Pairs with Variable Pricing: a flexible mover is a chance to fill a low-demand day at a better rate.</span></span></div>
-        <div class="tdesc">One tap: locked in / a few days / very flexible. Flexible movers can be steered to a cheaper, lower-demand day — they save, we lift TUR. Captured on the form; VP acts on it.</div>
-        <div class="buckets"><span class="badge b-conv">convert</span></div>
+        <div class="tlabel">Date flexibility → intent + scheduling fit <span class="tip">i<span class="bub">Net-new field (Cameron-added, after KP's review). Flexibility can't be derived on the backend — you have to ask. Tells us how firm the date is: if a customer's must-have day is booked, a flexible mover can take the next best slot, while a no-flex mover needs that exact date (or careful handling).</span></span></div>
+        <div class="tdesc">One tap: locked in / a few days / very flexible. Captures how firm the date is so scheduling knows how to handle the lead when the preferred day isn't available. An intent / fit signal — not a pricing lever.</div>
+        <div class="buckets"><span class="badge b-intent">intent</span></div>
       </div></div>
     </div>
     <div class="toggle disabled" data-tg="proximity" onclick="toggle('proximity')">
@@ -962,7 +962,7 @@
     storage:"Storage units get packed very differently, so quoting off unit size can over- or under-shoot. Good default for small units; flag larger ones for a quick confirm.",
     partialpack:"Adds a step after 'Yes.' Worth it — it stops partial-packers from force-fitting into a blind yes/no — but full-pack folks must be able to say 'whole house' in one tap so it doesn't feel like extra work.",
     multistop:"A stop count isn't a full route, so long/complex crawls still need human routing. This is just enough to keep simple 2–3 stop moves estimable instead of bouncing them.",
-    dateflex:"One extra tap on the date step. Worth it — asking is the only way to know if you can steer them to a cheaper day, and the savings framing means it helps conversion more than it costs. It only pays off once VP rates are wired so the form (or EMMA) can actually surface the cheaper option.",
+    dateflex:"One extra tap on the date step. Worth it — asking is the only way to know how firm the date is, which is exactly what scheduling needs when a preferred day is booked. Keep the framing about fit, not savings: a money angle can push people to overstate their flexibility or imply a discount we're not offering.",
     proximity:"Free and behavioral, but far-out dates aren't always low intent — planners book early. Use it to nudge the intent axis, never to gate or deprioritize on its own.",
     intentq:"Self-reported intent is gameable and, per the research, unproven. Capture it for routing value, but validate against actual bookings before you weight it — and frame it as personalization, not a qualifying test."
   };
@@ -975,7 +975,7 @@
     storage:{v:'keep', n:'Quote off the storage unit size — no copy change.'},
     partialpack:{v:'keep', n:'Copy locked: “Which rooms need packing? Lets us scope the packing instead of guessing. Tap all that apply, or ‘the whole house’ if it’s everything.”'},
     multistop:{v:'keep', n:'Options locked: 1 stop / 2 stops / 3+ stops.'},
-    dateflex:{v:'keep', n:'NEW (Cameron-added, after KP review): one-tap “Any wiggle room on your date?” → 📌 Nope, this is the day / 📅 A few days either way / 🤙 Pretty flexible — no rush. Front end captures the tier; backend tags it + feeds Variable Pricing to steer flexible movers to a softer, cheaper day. Phase-2: surface the live savings (“move Tue, save $X”) once VP rates are wired to the form.'},
+    dateflex:{v:'keep', n:'NEW (Cameron-added, after KP review): one-tap “Any wiggle room on your date?” → 📌 Nope, this is the day / 📅 A few days either way / 🤙 Pretty flexible — no rush. Subhead: “If your first-choice day is full, knowing your flexibility helps us find you the next best slot.” Purpose is intent + scheduling fit, NOT savings — front end captures how firm the date is; backend tags it so scheduling/routing knows how to handle the lead when the preferred day isn’t available.'},
     proximity:{v:'cut', n:'No front-end element. Date proximity is captured by the backend as an intent signal — nothing needed on the form.'},
     intentq:{v:'keep', n:'Keep “Last thing. How locked-in is this move?” Removed the “best way to reach you” contact preference — they’ve already left contact info.'}
   };
@@ -1013,7 +1013,7 @@
     tenure:'"How long in your home?" (tenure)', density:'"How packed is your place?" (density)',
     why:'Capture the partial-move "why"', size:'Ask for an equivalent size', storage:'Quote storage off the unit size',
     partialpack:'Packing scope — which rooms', multistop:'Multi-stop: capture the count',
-    dateflex:'Date flexibility → steer to a softer day',
+    dateflex:'Date flexibility → intent + scheduling fit',
     proximity:'Use date proximity as an intent signal', intentq:'Soft intent + contact preference'
   };
   function exportDecisions(){
